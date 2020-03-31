@@ -1,0 +1,121 @@
+<template>
+  <div id="app">
+    <h2>树状思维导图</h2>
+    <tree :nodes="nodes" :startId="nodes[0].id" />
+  </div>
+</template>
+
+<script>
+import tree from "./components/tree/tree";
+export default {
+  name: "app",
+  components: { tree },
+  data() {
+    return {
+      nodes: [
+        {
+          id: "001",
+          text: "项目管理",
+          fatherId: "001",
+          contract: false,
+          children: ["002", "003", "004", "005"]
+        },
+        {
+          id: "002",
+          text: "计划进度",
+          fatherId: "001",
+          contract: false,
+          children: ["006", "007"]
+        },
+        {
+          id: "003",
+          text: "项目状态",
+          fatherId: "001",
+          children: ["010", "011"]
+        },
+        {
+          id: "004",
+          text: "项目会议",
+          fatherId: "001",
+          children: []
+        },
+        {
+          id: "005",
+          text: "项目验收",
+          fatherId: "001",
+          children: []
+        },
+        {
+          id: "006",
+          text: "阶段一",
+          fatherId: "002",
+          contract: false,
+          children: ["008", "009"]
+        },
+        {
+          id: "007",
+          text: "阶段二",
+          fatherId: "002",
+          children: []
+        },
+        {
+          id: "008",
+          text: "备份json文件",
+          fatherId: "006",
+          children: []
+        },
+        {
+          id: "009",
+          text: "还原数据",
+          fatherId: "006",
+          children: []
+        },
+        {
+          id: "010",
+          text: "4月计划",
+          fatherId: "003",
+          children: []
+        },
+        {
+          id: "011",
+          text: "5月计划",
+          fatherId: "003",
+          children: ["012", "013", "014"]
+        },
+        {
+          id: "012",
+          text: "原型&界面设计",
+          fatherId: "011",
+          children: []
+        },
+        {
+          id: "013",
+          text: "开发",
+          fatherId: "011",
+          children: []
+        },
+        {
+          id: "014",
+          text: "测试",
+          fatherId: "011",
+          children: []
+        }
+      ]
+    };
+  }
+};
+</script>
+
+<style>
+body {
+  margin: unset;
+}
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  width: 100%;
+}
+</style>
