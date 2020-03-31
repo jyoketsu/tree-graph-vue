@@ -1,15 +1,20 @@
 <template>
   <div id="app">
-    <h2>树状思维导图</h2>
+    <h2>树状思维导图组件 for Vue</h2>
+    <h3>多列视图</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
+    <h3>单列视图</h3>
+    <tree-single :nodes="nodes" :startId="nodes[0].id" />
   </div>
 </template>
 
 <script>
-import tree from "./components/tree/tree";
+// import tree from "./components/tree/tree";
+import Vue from "vue";
+import TreeGraph from "./index";
+Vue.use(TreeGraph);
 export default {
   name: "app",
-  components: { tree },
   data() {
     return {
       nodes: [

@@ -144,11 +144,6 @@ export default {
       type: String,
       required: true
     },
-    // 节点元素宽度
-    ITEM_WIDTH: {
-      type: Number,
-      default: 50
-    },
     // 节点元素高度
     ITEM_HEIGHT: {
       type: Number,

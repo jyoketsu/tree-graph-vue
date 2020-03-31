@@ -8,6 +8,7 @@ export default function calculate(
   INDENT,
   FONT_SIZE
 ) {
+  nodes = JSON.parse(JSON.stringify(nodes));
   // 根节点
   const root = findNodeById(nodes, startId);
   const rootWidth = getStrWidth(root.text, FONT_SIZE);
@@ -16,30 +17,12 @@ export default function calculate(
   let MAX_Y = ITEM_HEIGHT;
   let MAX_END = rootWidth;
 
-  let SECOND_START_NODE_ID;
-  let SECOND_END_NODE_ID;
   let second_start_x;
   let second_end_x;
 
   if (!root.contract) {
-    const secondLevel = getStarts(nodes, root);
-    for (let index = 0; index < secondLevel.length; index++) {
-      const element = secondLevel[index];
-      if (index === 0) {
-        SECOND_START_NODE_ID = element.id;
-        location(nodes, element, 10, 80);
-      } else {
-        if (index + 1 === secondLevel.length) {
-          SECOND_END_NODE_ID = element.id;
-        }
-        location(nodes, element, MAX_END + 55, 80);
-      }
-    }
+    location(nodes, root, 10, 10);
   }
-
-  // 根节点坐标
-  root.x = MAX_X / 2;
-  root.y = 1;
 
   return {
     max_x: MAX_X,
@@ -50,14 +33,6 @@ export default function calculate(
     nodes: nodes
   };
 
-  function getStarts(nodes, root) {
-    const secondLevel = [];
-    for (let index = 0; index < root.children.length; index++) {
-      secondLevel.push(findNodeById(nodes, root.children[index]));
-    }
-    return secondLevel;
-  }
-
   function location(nodes, node, x, y) {
     const nodeWidth = getStrWidth(node.text, FONT_SIZE);
     node.x = x;
@@ -66,36 +41,32 @@ export default function calculate(
     const childrenIds = node.children;
     let childX = x + INDENT;
     let childY = y;
-    MAX_X = childX;
+    let lastChildY = y;
+    if (childX > MAX_X) {
+      MAX_X = childX;
+    }
     if (MAX_END < node.x + nodeWidth) {
       MAX_END = node.x + nodeWidth;
-    }
-
-    if (node.id === SECOND_START_NODE_ID) {
-      second_start_x = node.x + nodeWidth / 2;
-    }
-    if (node.id === SECOND_END_NODE_ID) {
-      second_end_x = node.x + nodeWidth / 2;
     }
 
     if (!node.contract) {
       // 遍历子节点
       for (let index = 0; index < childrenIds.length; index++) {
         childY += ITEM_HEIGHT;
+        lastChildY += ITEM_HEIGHT;
         if (childY > MAX_Y) {
           MAX_Y = childY;
         }
         const element = findNodeById(nodes, childrenIds[index]);
+        childY = location(nodes, element, childX, childY);
         // 最后一个子节点
-        if (index + 1 === childrenIds.length) {
-          location(nodes, element, childX, childY);
-        } else {
-          childY = location(nodes, element, childX, childY);
+        if (index + 1 !== childrenIds.length) {
+          lastChildY = childY;
         }
       }
     }
 
-    node.max_child_y = childY;
+    node.last_child_y = lastChildY;
     return childY;
   }
 
