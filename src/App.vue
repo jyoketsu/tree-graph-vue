@@ -22,15 +22,17 @@ export default {
           id: "001",
           text: "项目管理",
           fatherId: "001",
-          contract: false,
-          children: ["002", "003", "004", "005"]
+          children: ["002", "003", "004", "005"],
+          contract: false
         },
         {
           id: "002",
           text: "计划进度",
           fatherId: "001",
+          children: ["006", "007"],
           contract: false,
-          children: ["006", "007"]
+          showAvatar: true,
+          showCheckbox: true
         },
         {
           id: "003",

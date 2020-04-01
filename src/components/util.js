@@ -46,7 +46,8 @@ function getNumberNum(str) {
   return res ? res.length : 0;
 }
 
-function getStrWidth(str, fontSize, padding) {
+function getNodeWidth(node, fontSize, padding) {
+  const str = node.text;
   const full = getFullAngleNum(str);
   const punctuation = getHalfAnglePunctuationNum(str);
   const alphabet = getAlphabetNum(str);
@@ -54,14 +55,33 @@ function getStrWidth(str, fontSize, padding) {
   const width = textWidth(fontSize);
 
   const paddingWidth = padding ? padding * 2 : 10;
+  const extInfoWidth = getExtInfoWidth(node);
 
   return (
     width.fullAngleWidth * full +
     width.halfAnglePunctuationWidth * punctuation +
     width.alphabetWidth * alphabet +
     width.numberWidth * number +
-    paddingWidth
+    paddingWidth +
+    extInfoWidth
   );
 }
 
-export { textWidth, getStrWidth };
+function getExtInfoWidth(node) {
+  const avatarWidth = node.showAvatar ? 22 : 0;
+  const checkboxWidth = node.showCheckbox ? 18 : 0;
+  const statusWidth = node.showStatus ? 22 : 0;
+  const temp = [avatarWidth, checkboxWidth, statusWidth];
+  let count = 0;
+  for (let index = 0; index < temp.length; index++) {
+    const element = temp[index];
+    if (element) {
+      count++;
+    }
+  }
+
+  const marginWidth = count ? count * 2 : 0;
+  return avatarWidth + checkboxWidth + statusWidth + marginWidth;
+}
+
+export { textWidth, getNodeWidth, getExtInfoWidth };

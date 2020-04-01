@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { getStrWidth } from "../util";
+import { getNodeWidth } from "../util";
 
 export default function calculate(
   nodes,
@@ -10,7 +10,7 @@ export default function calculate(
 ) {
   // 根节点
   const root = findNodeById(nodes, startId);
-  const rootWidth = getStrWidth(root.text, FONT_SIZE);
+  const rootWidth = getNodeWidth(root, FONT_SIZE);
   root.width = rootWidth;
   let MAX_X = rootWidth;
   let MAX_Y = ITEM_HEIGHT;
@@ -59,7 +59,7 @@ export default function calculate(
   }
 
   function location(nodes, node, x, y) {
-    const nodeWidth = getStrWidth(node.text, FONT_SIZE);
+    const nodeWidth = getNodeWidth(node, FONT_SIZE);
     node.x = x;
     node.y = y;
     node.width = nodeWidth;

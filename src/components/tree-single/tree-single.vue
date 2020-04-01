@@ -1,105 +1,109 @@
 <template>
-  <svg
-    class="tree-svg-single"
-    :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
-    :width="max_end"
-    :height="max_y + ITEM_HEIGHT"
-  >
-    <defs>
-      <g
-        id="contract"
-        width="10"
-        height="10"
-        viewBox="0,0,10,10"
-        preserveAspectRatio="xMinYMin meet"
-      >
-        <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-        <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-      </g>
-      <g
-        id="expand"
-        width="10"
-        height="10"
-        viewBox="0,0,10,10"
-        preserveAspectRatio="xMinYMin meet"
-      >
-        <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-        <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-        <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
-      </g>
-    </defs>
-    <g
-      v-for="(node, index) in c_nodes"
-      :key="index"
-      :class="`node-group-${index}`"
+  <Drag>
+    <svg
+      class="tree-svg-single"
+      :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
+      :width="max_end"
+      :height="max_y + ITEM_HEIGHT"
     >
-      <!-- 节点 -->
-      <rect
-        v-if="node.x && node.y"
-        class="node-rect"
-        :x="node.x"
-        :y="node.y"
-        rx="4"
-        ry="4"
-        :width="node.width"
-        :height="BLOCK_HEIGHT"
-        stroke="rgb(215, 215, 215)"
-      />
-      <text
-        v-if="node.x && node.y"
-        class="node-text"
-        :x="node.x + 5"
-        :y="node.y + BLOCK_HEIGHT / 2"
-        dominant-baseline="middle"
-        :font-size="FONT_SIZE"
-        @click="handleClickNode(node)"
+      <defs>
+        <g
+          id="contract"
+          width="10"
+          height="10"
+          viewBox="0,0,10,10"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
+          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
+        </g>
+        <g
+          id="expand"
+          width="10"
+          height="10"
+          viewBox="0,0,10,10"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
+          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
+          <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
+        </g>
+      </defs>
+      <g
+        v-for="(node, index) in c_nodes"
+        :key="index"
+        :class="`node-group-${index}`"
       >
-        {{ node.text }}
-      </text>
-      <path
-        v-if="node.x && node.y"
-        :d="fatherPath(node)"
-        fill="none"
-        stroke="rgb(215, 215, 215)"
-      />
-      <path
-        v-if="node.x && node.y && node.children.length && !node.contract"
-        :d="childPath(node)"
-        fill="none"
-        stroke="rgb(215, 215, 215)"
-      />
-      <!-- 圆点 -->
-      <circle
-        v-if="node.x && node.y && !node.children.length"
-        id="dot"
-        :cx="node.x - 4"
-        :cy="node.y + BLOCK_HEIGHT / 2"
-        r="4"
-        fill="#666"
-      />
-      <use
-        v-if="node.x && node.y && node.children.length && !node.contract"
-        key="contract"
-        href="#contract"
-        :x="node.x - 10"
-        :y="node.y + BLOCK_HEIGHT / 2 - 5"
-        @click="handleClickNode(node)"
-      />
-      <use
-        v-if="node.x && node.y && node.children.length && node.contract"
-        key="expand"
-        href="#expand"
-        :x="node.x - 10"
-        :y="node.y + BLOCK_HEIGHT / 2 - 5"
-        @click="handleClickNode(node)"
-      />
-    </g>
-  </svg>
+        <!-- 节点 -->
+        <rect
+          v-if="node.x && node.y"
+          class="node-rect"
+          :x="node.x"
+          :y="node.y"
+          rx="4"
+          ry="4"
+          :width="node.width"
+          :height="BLOCK_HEIGHT"
+          stroke="rgb(215, 215, 215)"
+        />
+        <text
+          v-if="node.x && node.y"
+          class="node-text"
+          :x="node.x + 5"
+          :y="node.y + BLOCK_HEIGHT / 2"
+          dominant-baseline="middle"
+          :font-size="FONT_SIZE"
+          @click="handleClickNode(node)"
+        >
+          {{ node.text }}
+        </text>
+        <path
+          v-if="node.x && node.y"
+          :d="fatherPath(node)"
+          fill="none"
+          stroke="rgb(215, 215, 215)"
+        />
+        <path
+          v-if="node.x && node.y && node.children.length && !node.contract"
+          :d="childPath(node)"
+          fill="none"
+          stroke="rgb(215, 215, 215)"
+        />
+        <!-- 圆点 -->
+        <circle
+          v-if="node.x && node.y && !node.children.length"
+          id="dot"
+          :cx="node.x - 4"
+          :cy="node.y + BLOCK_HEIGHT / 2"
+          r="4"
+          fill="#666"
+        />
+        <use
+          v-if="node.x && node.y && node.children.length && !node.contract"
+          key="contract"
+          href="#contract"
+          :x="node.x - 10"
+          :y="node.y + BLOCK_HEIGHT / 2 - 5"
+          @click="handleClickNode(node)"
+        />
+        <use
+          v-if="node.x && node.y && node.children.length && node.contract"
+          key="expand"
+          href="#expand"
+          :x="node.x - 10"
+          :y="node.y + BLOCK_HEIGHT / 2 - 5"
+          @click="handleClickNode(node)"
+        />
+      </g>
+    </svg>
+  </Drag>
 </template>
 <script>
 import calculate from "./treeService";
+import Drag from "../Drag";
 export default {
   name: "tree-single",
+  components: { Drag },
   props: {
     // 节点
     nodes: {
@@ -133,7 +137,7 @@ export default {
     // 缩进
     INDENT: {
       type: Number,
-      default: 25
+      default: 30
     },
     handleClickNode: {
       type: Function,
@@ -155,7 +159,9 @@ export default {
       max_y: 0,
       max_end: 0,
       second_start_x: 0,
-      second_end_x: 0
+      second_end_x: 0,
+      translateX: 0,
+      translateY: 0
     };
   },
   methods: {

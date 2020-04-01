@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-graph">
+  <Drag>
     <svg
       class="tree-svg"
       :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
@@ -28,6 +28,16 @@
           <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
           <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
         </g>
+        <g
+          id="checkbox"
+          width="18"
+          height="18"
+          viewBox="0,0,18,18"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <circle cx="9" cy="9" r="9" fill="rgb(85, 85, 85)" />
+          <path d="M 4 9 L 8 13 L 14 5" stroke="#fff" stroke-width="1.6" />
+        </g>
       </defs>
       <g
         v-for="(node, index) in c_nodes"
@@ -46,11 +56,37 @@
           :height="BLOCK_HEIGHT"
           stroke="rgb(215, 215, 215)"
         />
+        <clipPath
+          v-if="node.x && node.y && node.showAvatar"
+          :id="`avatar-clip-${node.id}`"
+        >
+          <circle
+            :cx="location(node, 'avatar').x + 11"
+            :cy="location(node, 'avatar').y + 11"
+            r="11"
+          />
+        </clipPath>
+        <image
+          v-if="node.x && node.y && node.showAvatar"
+          :x="location(node, 'avatar').x"
+          :y="location(node, 'avatar').y"
+          width="22"
+          height="22"
+          xlink:href="https://psnine.com/Upload/game/11003.png"
+          :clip-path="`url(#avatar-clip-${node.id})`"
+        />
+        <use
+          v-if="node.x && node.y && node.showCheckbox"
+          key="checkbox"
+          href="#checkbox"
+          :x="location(node, 'checkbox').x"
+          :y="location(node, 'checkbox').y"
+        />
         <text
           v-if="node.x && node.y"
           class="node-text"
-          :x="node.x + 5"
-          :y="node.y + BLOCK_HEIGHT / 2"
+          :x="location(node, 'text').x"
+          :y="location(node, 'text').y"
           dominant-baseline="middle"
           :font-size="FONT_SIZE"
           @click="handleClickNode(node)"
@@ -122,13 +158,16 @@
         />
       </g>
     </svg>
-  </div>
+  </Drag>
 </template>
 
 <script>
 import calculate from "./treeService";
+import { getExtInfoWidth } from "../util";
+import Drag from "../Drag";
 export default {
   name: "tree",
+  components: { Drag },
   props: {
     // 节点
     nodes: {
@@ -163,6 +202,15 @@ export default {
     INDENT: {
       type: Number,
       default: 25
+    },
+    // 头像宽度
+    AVATAR_WIDTH: {
+      type: Number,
+      default: 22
+    },
+    CHECK_BOX_WIDTH: {
+      type: Number,
+      default: 18
     },
     handleClickNode: {
       type: Function,
@@ -217,6 +265,28 @@ export default {
       const M = `M ${node.x + node.width / 2} ${node.y}`;
       const V = `V ${node.y - 25}`;
       return `${M} ${V}`;
+    },
+    location: function(node, type) {
+      switch (type) {
+        case "avatar":
+          return {
+            x: node.x + 5,
+            y: node.y + (this.BLOCK_HEIGHT - 22) / 2
+          };
+        case "checkbox":
+          return {
+            x: node.x + 5 + 22 + 2,
+            y: node.y + (this.BLOCK_HEIGHT - 18) / 2
+          };
+        case "text":
+          const extWidth = getExtInfoWidth(node);
+          return {
+            x: node.x + 5 + extWidth + (extWidth ? 2 : 0),
+            y: node.y + this.BLOCK_HEIGHT / 2 + 1
+          };
+        default:
+          break;
+      }
     }
   },
   mounted() {
