@@ -12,7 +12,7 @@
 
 树状思维导图组件 for vue
 
-## Build Setup
+## 编译 Build Setup
 
 ```bash
 # install dependencies
@@ -24,8 +24,12 @@ yarn dev
 # build for production with minification
 yarn build
 ```
+## 安装 Install
+```
+yarn add tree-graph-vue
+```
 
-## 用法
+## 用法 Usage
 
 ```html
 <template>
@@ -39,7 +43,7 @@ yarn build
 ```
 
 ```javascript
-import TreeGraph from "./index";
+import TreeGraph from "tree-graph-vue";
 Vue.use(TreeGraph);
 ```
 
