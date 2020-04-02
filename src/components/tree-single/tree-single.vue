@@ -28,35 +28,137 @@
           <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
           <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
         </g>
+        <g
+          id="checkbox-checked"
+          width="18"
+          height="18"
+          viewBox="0,0,18,18"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <circle cx="9" cy="9" r="9" fill="rgb(85, 85, 85)" />
+          <path d="M 4 9 L 8 13 L 14 5" stroke="#fff" stroke-width="1.6" />
+        </g>
+        <g
+          id="checkbox-uncheck"
+          width="18"
+          height="18"
+          viewBox="0,0,18,18"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <circle
+            cx="9"
+            cy="9"
+            r="9"
+            fill="rgb(216, 216, 216)"
+            stroke="#000000"
+          />
+        </g>
+        <g
+          id="status"
+          width="22"
+          height="22"
+          viewBox="0,0,22,22"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(85, 85, 85)" />
+          <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
+        </g>
+        <g
+          id="status-overdue"
+          width="22"
+          height="22"
+          viewBox="0,0,22,22"
+          preserveAspectRatio="xMinYMin meet"
+        >
+          <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(221, 53, 53)" />
+          <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
+        </g>
       </defs>
       <g
         v-for="(node, index) in c_nodes"
         :key="index"
         :class="`node-group-${index}`"
       >
-        <!-- 节点 -->
         <rect
           v-if="node.x && node.y"
-          class="node-rect"
+          :class="`node-rect ${showBorder(node) ? 'border-rect' : ''}`"
           :x="node.x"
           :y="node.y"
           rx="4"
           ry="4"
           :width="node.width"
           :height="BLOCK_HEIGHT"
-          stroke="rgb(215, 215, 215)"
         />
+        <clipPath
+          v-if="node.x && node.y && node.showAvatar"
+          :id="`single-avatar-clip-${node.id}`"
+        >
+          <circle
+            :cx="location(node, 'avatar').x + 11"
+            :cy="location(node, 'avatar').y + 11"
+            r="11"
+          />
+        </clipPath>
+        <!-- 头像/图片 -->
+        <image
+          v-if="node.x && node.y && node.showAvatar"
+          :x="location(node, 'avatar').x"
+          :y="location(node, 'avatar').y"
+          width="22"
+          height="22"
+          xlink:href="https://psnine.com/Upload/game/11003.png"
+          :clip-path="`url(#single-avatar-clip-${node.id})`"
+        />
+        <!-- 勾选框 -->
+        <use
+          v-if="node.x && node.y && node.showCheckbox"
+          key="checkbox"
+          :href="`#checkbox-${node.checked ? 'checked' : 'uncheck'}`"
+          :x="location(node, 'checkbox').x"
+          :y="location(node, 'checkbox').y"
+        />
+        <!-- 任务状态 -->
+        <use
+          v-if="node.x && node.y && node.showStatus"
+          key="status"
+          :href="`#status${node.limitDay < 0 ? '-overdue' : ''}`"
+          :x="location(node, 'status').x"
+          :y="location(node, 'status').y"
+        />
+        <g fill="#fff" text-anchor="middle" dominant-baseline="middle">
+          <text
+            v-if="node.x && node.y && node.showStatus"
+            :x="location(node, 'status').x + 11"
+            :y="location(node, 'status').y + 13"
+            font-size="10"
+            font-weight="800"
+          >
+            {{ node.limitDay }}
+          </text>
+          <text
+            v-if="node.x && node.y && node.showStatus"
+            :x="location(node, 'status').x + 18"
+            :y="location(node, 'status').y + 5"
+            font-size="6"
+            font-weight="800"
+          >
+            {{ node.hour }}
+          </text>
+        </g>
+
+        <!-- 文字 -->
         <text
           v-if="node.x && node.y"
           class="node-text"
-          :x="node.x + 5"
-          :y="node.y + BLOCK_HEIGHT / 2"
+          :x="location(node, 'text').x"
+          :y="location(node, 'text').y"
           dominant-baseline="middle"
           :font-size="FONT_SIZE"
           @click="handleClickNode(node)"
         >
           {{ node.text }}
         </text>
+
         <path
           v-if="node.x && node.y"
           :d="fatherPath(node)"
@@ -100,6 +202,7 @@
 </template>
 <script>
 import calculate from "./treeService";
+import { nodeLocation } from "../util";
 import Drag from "../Drag";
 export default {
   name: "tree-single",
@@ -122,7 +225,7 @@ export default {
     // 节点元素高度
     ITEM_HEIGHT: {
       type: Number,
-      default: 80
+      default: 50
     },
     // 节点块高度
     BLOCK_HEIGHT: {
@@ -176,6 +279,18 @@ export default {
       const M = `M ${node.x + 5} ${node.y + this.BLOCK_HEIGHT}`;
       const V = `V ${node.last_child_y + this.BLOCK_HEIGHT / 2}`;
       return `${M} ${V}`;
+    },
+    location: function(node, type) {
+      return nodeLocation(node, type, this.BLOCK_HEIGHT);
+    },
+    showBorder: function(node) {
+      if (
+        node.children.length ||
+        node.fatherId === this.startId ||
+        node.id === this.startId
+      ) {
+        return true;
+      } else return false;
     }
   },
   mounted() {
@@ -198,11 +313,15 @@ export default {
 </script>
 <style scoped>
 .node-rect {
-  /* fill: none; */
-  fill: #f2f2f2;
+  fill: none;
   stroke-width: 1;
+}
+.border-rect {
+  fill: #fff;
+  stroke: rgb(215, 215, 215);
 }
 .node-text {
   user-select: none;
+  fill: #999;
 }
 </style>

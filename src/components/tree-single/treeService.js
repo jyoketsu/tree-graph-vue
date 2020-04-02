@@ -52,7 +52,11 @@ export default function calculate(
     if (!node.contract) {
       // 遍历子节点
       for (let index = 0; index < childrenIds.length; index++) {
-        childY += ITEM_HEIGHT;
+        if (index === 0) {
+          childY += ITEM_HEIGHT * 1.3;
+        } else {
+          childY += ITEM_HEIGHT;
+        }
         lastChildY += ITEM_HEIGHT;
         if (childY > MAX_Y) {
           MAX_Y = childY;

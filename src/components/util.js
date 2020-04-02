@@ -54,7 +54,7 @@ function getNodeWidth(node, fontSize, padding) {
   const number = getNumberNum(str);
   const width = textWidth(fontSize);
 
-  const paddingWidth = padding ? padding * 2 : 10;
+  const paddingWidth = padding ? padding * 1.5 : 10;
   const extInfoWidth = getExtInfoWidth(node);
 
   return (
@@ -80,8 +80,40 @@ function getExtInfoWidth(node) {
     }
   }
 
-  const marginWidth = count ? count * 2 : 0;
+  const marginWidth = count ? count * 1.5 : 0;
   return avatarWidth + checkboxWidth + statusWidth + marginWidth;
 }
 
-export { textWidth, getNodeWidth, getExtInfoWidth };
+function nodeLocation(node, type, BLOCK_HEIGHT) {
+  switch (type) {
+    case "avatar":
+      return {
+        x: node.x + 5,
+        y: node.y + (BLOCK_HEIGHT - 22) / 2
+      };
+    case "checkbox":
+      return {
+        x: node.x + 5 + (node.showAvatar ? 22 + 2 : 0),
+        y: node.y + (BLOCK_HEIGHT - 18) / 2
+      };
+    case "status":
+      return {
+        x:
+          node.x +
+          5 +
+          (node.showAvatar ? 22 + 2 : 0) +
+          (node.showCheckbox ? 18 + 2 : 0),
+        y: node.y + (BLOCK_HEIGHT - 22) / 2
+      };
+    case "text":
+      const extWidth = getExtInfoWidth(node);
+      return {
+        x: node.x + 5 + extWidth + (extWidth ? 2 : 0),
+        y: node.y + BLOCK_HEIGHT / 2 + 1
+      };
+    default:
+      break;
+  }
+}
+
+export { textWidth, getNodeWidth, getExtInfoWidth, nodeLocation };

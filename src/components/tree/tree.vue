@@ -6,39 +6,7 @@
       :width="max_end"
       :height="max_y + ITEM_HEIGHT"
     >
-      <defs>
-        <g
-          id="contract"
-          width="10"
-          height="10"
-          viewBox="0,0,10,10"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-        </g>
-        <g
-          id="expand"
-          width="10"
-          height="10"
-          viewBox="0,0,10,10"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-          <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
-        </g>
-        <g
-          id="checkbox"
-          width="18"
-          height="18"
-          viewBox="0,0,18,18"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle cx="9" cy="9" r="9" fill="rgb(85, 85, 85)" />
-          <path d="M 4 9 L 8 13 L 14 5" stroke="#fff" stroke-width="1.6" />
-        </g>
-      </defs>
+      single-
       <g
         v-for="(node, index) in c_nodes"
         :key="index"
@@ -47,14 +15,13 @@
         <!-- 节点 -->
         <rect
           v-if="node.x && node.y"
-          class="node-rect"
+          :class="`node-rect ${showBorder(node) ? 'border-rect' : ''}`"
           :x="node.x"
           :y="node.y"
           rx="4"
           ry="4"
           :width="node.width"
           :height="BLOCK_HEIGHT"
-          stroke="rgb(215, 215, 215)"
         />
         <clipPath
           v-if="node.x && node.y && node.showAvatar"
@@ -66,6 +33,7 @@
             r="11"
           />
         </clipPath>
+        <!-- 头像/图片 -->
         <image
           v-if="node.x && node.y && node.showAvatar"
           :x="location(node, 'avatar').x"
@@ -75,13 +43,44 @@
           xlink:href="https://psnine.com/Upload/game/11003.png"
           :clip-path="`url(#avatar-clip-${node.id})`"
         />
+        <!-- 勾选框 -->
         <use
           v-if="node.x && node.y && node.showCheckbox"
           key="checkbox"
-          href="#checkbox"
+          :href="`#checkbox-${node.checked ? 'checked' : 'uncheck'}`"
           :x="location(node, 'checkbox').x"
           :y="location(node, 'checkbox').y"
         />
+        <!-- 任务状态 -->
+        <use
+          v-if="node.x && node.y && node.showStatus"
+          key="status"
+          :href="`#status${node.limitDay < 0 ? '-overdue' : ''}`"
+          :x="location(node, 'status').x"
+          :y="location(node, 'status').y"
+        />
+        <g fill="#fff" text-anchor="middle" dominant-baseline="middle">
+          <text
+            v-if="node.x && node.y && node.showStatus"
+            :x="location(node, 'status').x + 11"
+            :y="location(node, 'status').y + 13"
+            font-size="10"
+            font-weight="800"
+          >
+            {{ node.limitDay }}
+          </text>
+          <text
+            v-if="node.x && node.y && node.showStatus"
+            :x="location(node, 'status').x + 18"
+            :y="location(node, 'status').y + 5"
+            font-size="6"
+            font-weight="800"
+          >
+            {{ node.hour }}
+          </text>
+        </g>
+
+        <!-- 文字 -->
         <text
           v-if="node.x && node.y"
           class="node-text"
@@ -93,12 +92,15 @@
         >
           {{ node.text }}
         </text>
+
+        <!-- 线条：左侧横线 -->
         <path
           v-if="node.x && node.y && node.fatherId && node.fatherId !== startId"
           :d="fatherPath(node)"
           fill="none"
           stroke="rgb(215, 215, 215)"
         />
+        <!-- 线条：纵线 -->
         <path
           v-if="
             node.x &&
@@ -163,7 +165,7 @@
 
 <script>
 import calculate from "./treeService";
-import { getExtInfoWidth } from "../util";
+import { nodeLocation } from "../util";
 import Drag from "../Drag";
 export default {
   name: "tree",
@@ -186,7 +188,7 @@ export default {
     // 节点元素高度
     ITEM_HEIGHT: {
       type: Number,
-      default: 80
+      default: 50
     },
     // 节点块高度
     BLOCK_HEIGHT: {
@@ -250,43 +252,35 @@ export default {
     },
     // 根节点底部水平线
     rootHpaht: function(node) {
-      const M = `M ${this.second_start_x} ${this.ITEM_HEIGHT - 25}`;
+      const M = `M ${this.second_start_x} ${this.ITEM_HEIGHT * 1.5 -
+        (this.ITEM_HEIGHT * 1.5 - this.BLOCK_HEIGHT) / 2}`;
       const H = `H ${this.second_end_x}`;
       return `${M} ${H}`;
     },
     // 根节点底部纵线
     rootVpath: function(node) {
       const M = `M ${node.x + node.width / 2} ${node.y + this.BLOCK_HEIGHT}`;
-      const V = `V ${this.ITEM_HEIGHT - 25}`;
+      const V = `V ${this.ITEM_HEIGHT * 1.5 -
+        (this.ITEM_HEIGHT * 1.5 - this.BLOCK_HEIGHT) / 2}`;
       return `${M} ${V}`;
     },
     // 第二层节点头部纵线
     rootBottomVpath: function(node) {
       const M = `M ${node.x + node.width / 2} ${node.y}`;
-      const V = `V ${node.y - 25}`;
+      const V = `V ${node.y - (this.ITEM_HEIGHT * 1.5 - this.BLOCK_HEIGHT) / 2}`;
       return `${M} ${V}`;
     },
     location: function(node, type) {
-      switch (type) {
-        case "avatar":
-          return {
-            x: node.x + 5,
-            y: node.y + (this.BLOCK_HEIGHT - 22) / 2
-          };
-        case "checkbox":
-          return {
-            x: node.x + 5 + 22 + 2,
-            y: node.y + (this.BLOCK_HEIGHT - 18) / 2
-          };
-        case "text":
-          const extWidth = getExtInfoWidth(node);
-          return {
-            x: node.x + 5 + extWidth + (extWidth ? 2 : 0),
-            y: node.y + this.BLOCK_HEIGHT / 2 + 1
-          };
-        default:
-          break;
-      }
+      return nodeLocation(node, type, this.BLOCK_HEIGHT);
+    },
+    showBorder: function(node) {
+      if (
+        node.children.length ||
+        node.fatherId === this.startId ||
+        node.id === this.startId
+      ) {
+        return true;
+      } else return false;
     }
   },
   mounted() {
@@ -308,11 +302,15 @@ export default {
 </script>
 <style scoped>
 .node-rect {
-  /* fill: none; */
-  fill: #f2f2f2;
+  fill: none;
   stroke-width: 1;
+}
+.border-rect {
+  fill: #fff;
+  stroke: rgb(215, 215, 215);
 }
 .node-text {
   user-select: none;
+  fill: #999;
 }
 </style>

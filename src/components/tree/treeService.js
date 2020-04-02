@@ -27,12 +27,12 @@ export default function calculate(
       const element = secondLevel[index];
       if (index === 0) {
         SECOND_START_NODE_ID = element.id;
-        location(nodes, element, 10, 80);
+        location(nodes, element, 10, ITEM_HEIGHT * 1.5);
       } else {
         if (index + 1 === secondLevel.length) {
           SECOND_END_NODE_ID = element.id;
         }
-        location(nodes, element, MAX_END + 55, 80);
+        location(nodes, element, MAX_END + 55, ITEM_HEIGHT * 1.5);
       }
     }
   }
@@ -81,7 +81,11 @@ export default function calculate(
     if (!node.contract) {
       // 遍历子节点
       for (let index = 0; index < childrenIds.length; index++) {
-        childY += ITEM_HEIGHT;
+        if (index === 0) {
+          childY += ITEM_HEIGHT * 1.3;
+        } else {
+          childY += ITEM_HEIGHT;
+        }
         if (childY > MAX_Y) {
           MAX_Y = childY;
         }
