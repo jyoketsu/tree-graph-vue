@@ -8,6 +8,7 @@ export default function calculate(
   INDENT,
   FONT_SIZE
 ) {
+  nodes = JSON.parse(JSON.stringify(nodes));
   // 根节点
   const root = findNodeById(nodes, startId);
   const rootWidth = getNodeWidth(root, FONT_SIZE);

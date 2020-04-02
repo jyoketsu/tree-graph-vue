@@ -270,11 +270,30 @@ export default {
     handleCommit: function(nodeId, text) {
       this.showInput = false;
       this.handleChangeNodeText(nodeId, text);
+    },
+    calculateNodes: function() {
+      const cal = calculate(
+        this.nodes,
+        this.startId,
+        this.ITEM_HEIGHT,
+        this.INDENT,
+        this.FONT_SIZE
+      );
+      this.c_nodes = cal.nodes;
+      this.max_x = cal.max_x;
+      this.max_y = cal.max_y;
+      this.max_end = cal.max_end;
+      this.second_start_x = cal.second_start_x;
+      this.second_end_x = cal.second_end_x;
     }
   },
   watch: {
-    nodes: function(val, oldVal) {
-      console.log("val--------", val);
+    nodes: {
+      immediate: true,
+      deep: true,
+      handler: function() {
+        this.calculateNodes();
+      }
     },
     selected: function(val, oldVal) {
       if (val && oldVal && val.id !== oldVal.id) {
@@ -283,19 +302,7 @@ export default {
     }
   },
   mounted() {
-    const cal = calculate(
-      this.nodes,
-      this.startId,
-      this.ITEM_HEIGHT,
-      this.INDENT,
-      this.FONT_SIZE
-    );
-    this.c_nodes = cal.nodes;
-    this.max_x = cal.max_x;
-    this.max_y = cal.max_y;
-    this.max_end = cal.max_end;
-    this.second_start_x = cal.second_start_x;
-    this.second_end_x = cal.second_end_x;
+    this.calculateNodes();
   }
 };
 </script>

@@ -186,6 +186,14 @@ export default {
         }
       ]
     };
+  },
+  mounted() {
+    let that = this;
+    // setTimeout(() => {
+    //   let temp = that.nodes;
+    //   temp[5].text = "Nuガンダムは伊達じゃない";
+    //   that.nodes = temp;
+    // }, 15000);
   }
 };
 </script>
