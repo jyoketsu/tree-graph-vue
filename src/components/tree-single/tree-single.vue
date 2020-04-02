@@ -79,86 +79,15 @@
         :key="index"
         :class="`node-group-${index}`"
       >
-        <rect
-          v-if="node.x && node.y"
-          :class="`node-rect ${showBorder(node) ? 'border-rect' : ''}`"
-          :x="node.x"
-          :y="node.y"
-          rx="4"
-          ry="4"
-          :width="node.width"
-          :height="BLOCK_HEIGHT"
+        <Node
+          :node="node"
+          :BLOCK_HEIGHT="BLOCK_HEIGHT"
+          :FONT_SIZE="FONT_SIZE"
+          :startId="startId"
+          alias="single"
+          :selected="selected"
+          :handleClickNode="clickNode"
         />
-        <clipPath
-          v-if="node.x && node.y && node.showAvatar"
-          :id="`single-avatar-clip-${node.id}`"
-        >
-          <circle
-            :cx="location(node, 'avatar').x + 11"
-            :cy="location(node, 'avatar').y + 11"
-            r="11"
-          />
-        </clipPath>
-        <!-- 头像/图片 -->
-        <image
-          v-if="node.x && node.y && node.showAvatar"
-          :x="location(node, 'avatar').x"
-          :y="location(node, 'avatar').y"
-          width="22"
-          height="22"
-          xlink:href="https://psnine.com/Upload/game/11003.png"
-          :clip-path="`url(#single-avatar-clip-${node.id})`"
-        />
-        <!-- 勾选框 -->
-        <use
-          v-if="node.x && node.y && node.showCheckbox"
-          key="checkbox"
-          :href="`#checkbox-${node.checked ? 'checked' : 'uncheck'}`"
-          :x="location(node, 'checkbox').x"
-          :y="location(node, 'checkbox').y"
-        />
-        <!-- 任务状态 -->
-        <use
-          v-if="node.x && node.y && node.showStatus"
-          key="status"
-          :href="`#status${node.limitDay < 0 ? '-overdue' : ''}`"
-          :x="location(node, 'status').x"
-          :y="location(node, 'status').y"
-        />
-        <g fill="#fff" text-anchor="middle" dominant-baseline="middle">
-          <text
-            v-if="node.x && node.y && node.showStatus"
-            :x="location(node, 'status').x + 11"
-            :y="location(node, 'status').y + 13"
-            font-size="10"
-            font-weight="800"
-          >
-            {{ node.limitDay }}
-          </text>
-          <text
-            v-if="node.x && node.y && node.showStatus"
-            :x="location(node, 'status').x + 18"
-            :y="location(node, 'status').y + 5"
-            font-size="6"
-            font-weight="800"
-          >
-            {{ node.hour }}
-          </text>
-        </g>
-
-        <!-- 文字 -->
-        <text
-          v-if="node.x && node.y"
-          class="node-text"
-          :x="location(node, 'text').x"
-          :y="location(node, 'text').y"
-          dominant-baseline="middle"
-          :font-size="FONT_SIZE"
-          @click="handleClickNode(node)"
-        >
-          {{ node.text }}
-        </text>
-
         <path
           v-if="node.x && node.y"
           :d="fatherPath(node)"
@@ -171,42 +100,29 @@
           fill="none"
           stroke="rgb(215, 215, 215)"
         />
-        <!-- 圆点 -->
-        <circle
-          v-if="node.x && node.y && !node.children.length"
-          id="dot"
-          :cx="node.x - 4"
-          :cy="node.y + BLOCK_HEIGHT / 2"
-          r="4"
-          fill="#666"
-        />
-        <use
-          v-if="node.x && node.y && node.children.length && !node.contract"
-          key="contract"
-          href="#contract"
-          :x="node.x - 10"
-          :y="node.y + BLOCK_HEIGHT / 2 - 5"
-          @click="handleClickNode(node)"
-        />
-        <use
-          v-if="node.x && node.y && node.children.length && node.contract"
-          key="expand"
-          href="#expand"
-          :x="node.x - 10"
-          :y="node.y + BLOCK_HEIGHT / 2 - 5"
-          @click="handleClickNode(node)"
+        <Dot
+          :node="node"
+          :BLOCK_HEIGHT="BLOCK_HEIGHT"
+          :handleClickDot="handleClickDot"
         />
       </g>
     </svg>
+    <Input
+      v-if="showInput"
+      :selected="selected"
+      :handleChangeNodeText="handleCommit"
+    />
   </Drag>
 </template>
 <script>
 import calculate from "./treeService";
-import { nodeLocation } from "../util";
 import Drag from "../Drag";
+import Node from "../Node";
+import Dot from "../Dot";
+import Input from "../NodeInput";
 export default {
   name: "tree-single",
-  components: { Drag },
+  components: { Drag, Node, Dot, Input },
   props: {
     // 节点
     nodes: {
@@ -253,6 +169,12 @@ export default {
       default: function(node) {
         console.log("---handleClickDot---", node);
       }
+    },
+    handleChangeNodeText: {
+      type: Function,
+      default: function(nodeId, text) {
+        console.log("---handleClickDot---", nodeId, text);
+      }
     }
   },
   data() {
@@ -263,8 +185,8 @@ export default {
       max_end: 0,
       second_start_x: 0,
       second_end_x: 0,
-      translateX: 0,
-      translateY: 0
+      selected: {},
+      showInput: false
     };
   },
   methods: {
@@ -280,17 +202,26 @@ export default {
       const V = `V ${node.last_child_y + this.BLOCK_HEIGHT / 2}`;
       return `${M} ${V}`;
     },
-    location: function(node, type) {
-      return nodeLocation(node, type, this.BLOCK_HEIGHT);
+    clickNode: function(node) {
+      if (this.selected.id === node.id) {
+        this.showInput = true;
+      }
+      this.selected = node;
+      this.handleClickNode(node);
     },
-    showBorder: function(node) {
-      if (
-        node.children.length ||
-        node.fatherId === this.startId ||
-        node.id === this.startId
-      ) {
-        return true;
-      } else return false;
+    handleCommit: function(nodeId, text) {
+      this.showInput = false;
+      this.handleChangeNodeText(nodeId, text);
+    }
+  },
+  watch: {
+    nodes: function(val, oldVal) {
+      console.log("val--------", val);
+    },
+    selected: function(val, oldVal) {
+      if (val && oldVal && val.id !== oldVal.id) {
+        this.showInput = false;
+      }
     }
   },
   mounted() {
@@ -311,17 +242,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.node-rect {
-  fill: none;
-  stroke-width: 1;
-}
-.border-rect {
-  fill: #fff;
-  stroke: rgb(215, 215, 215);
-}
-.node-text {
-  user-select: none;
-  fill: #999;
-}
-</style>

@@ -61,3 +61,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+.move-tree {
+  position: relative;
+  width: fit-content;
+}
+</style>

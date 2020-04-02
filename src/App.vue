@@ -201,6 +201,9 @@ body {
   text-align: center;
   color: #2c3e50;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 html {
   background-color: rgb(238, 238, 238);
