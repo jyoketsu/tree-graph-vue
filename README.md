@@ -24,7 +24,9 @@ yarn dev
 # build for production with minification
 yarn build
 ```
+
 ## 安装 Install
+
 ```
 yarn add tree-graph-vue
 ```
@@ -47,21 +49,36 @@ import TreeGraph from "tree-graph-vue";
 Vue.use(TreeGraph);
 ```
 
+## 操作
+
+| 操作                | 按键             |
+| ------------------- | ---------------- |
+| 新增子节点          | Tab              |
+| 新增兄弟节点        | Enter            |
+| 删除节点            | Delete           |
+| 保存树（file 模式） | Command/Ctrl + S |
+
 ## 组件属性
 
-| 属性                 | 说明              | 类型     | 是否必须 | 默认值 |
-| -------------------- | ----------------- | -------- | -------- | ------ |
-| nodes                | 节点              | Array    | 是       | -      |
-| startId              | 根节点 id         | String   | 是       | -      |
-| ITEM_HEIGHT          | 节点元素高度      | Number   | 否       | 50     |
-| BLOCK_HEIGHT         | 节点块高度        | Number   | 否       | 30     |
-| FONT_SIZE            | 节点字体大小      | Number   | 否       | 14     |
-| INDENT               | 缩进              | Number   | 否       | 25     |
-| AVATAR_WIDTH         | 头像宽度          | Number   | 否       | 22     |
-| CHECK_BOX_WIDTH      | 勾选框宽度        | Number   | 否       | 18     |
-| handleClickNode      | 点击节点事件      | Function | 否       | -      |
-| handleClickDot       | 点击收起/展开事件 | Function | 否       | -      |
-| handleChangeNodeText | 更改节点名事件    | Function | 否       | -      |
+| 属性                 | 说明                                            | 类型     | 是否必须 | 默认值 |
+| -------------------- | ----------------------------------------------- | -------- | -------- | ------ |
+| nodes                | 节点                                            | Array    | 是       | -      |
+| startId              | 根节点 id                                       | String   | 是       | -      |
+| fileMode             | 是否为文件模式 文件模式：将整颗树作为整体来操作 | Boolean  | 否       | true   |
+| ITEM_HEIGHT          | 节点元素高度                                    | Number   | 否       | 50     |
+| BLOCK_HEIGHT         | 节点块高度                                      | Number   | 否       | 30     |
+| FONT_SIZE            | 节点字体大小                                    | Number   | 否       | 14     |
+| INDENT               | 缩进                                            | Number   | 否       | 25     |
+| AVATAR_WIDTH         | 头像宽度                                        | Number   | 否       | 22     |
+| CHECK_BOX_WIDTH      | 勾选框宽度                                      | Number   | 否       | 18     |
+| handleClickNode      | 点击节点事件                                    | Function | 否       | -      |
+| handleClickDot       | 点击收起/展开事件                               | Function | 否       | -      |
+| handleCheck          | 点击勾选框事件                                  | Function | 否       | -      |
+| handleChangeNodeText | 更改节点名事件                                  | Function | 否       | -      |
+| handleAddNext        | 向后添加兄弟节点事件                            | Function | 否       | -      |
+| handleAddChild       | 添加子节点事件                                  | Function | 否       | -      |
+| handleDeleteNode     | 删除节点事件                                    | Function | 否       | -      |
+| handleSave           | 保存树                                          | Function | 否       | -      |
 
 ## 节点属性
 

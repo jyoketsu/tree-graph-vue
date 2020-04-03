@@ -1,5 +1,5 @@
 <template>
-  <g>
+  <g @click="handleClickNode(node)">
     <!-- 节点 -->
     <rect
       v-if="node.x && node.y"
@@ -38,6 +38,7 @@
       :href="`#checkbox-${node.checked ? 'checked' : 'uncheck'}`"
       :x="location(node, 'checkbox').x"
       :y="location(node, 'checkbox').y"
+      v-on:click.stop="handleCheck(node)"
     />
     <!-- 任务状态 -->
     <use
@@ -47,18 +48,21 @@
       :x="location(node, 'status').x"
       :y="location(node, 'status').y"
     />
-    <g fill="#fff" text-anchor="middle" dominant-baseline="middle">
+    <g
+      v-if="node.x && node.y && node.showStatus"
+      fill="#fff"
+      text-anchor="middle"
+      dominant-baseline="middle"
+    >
       <text
-        v-if="node.x && node.y && node.showStatus"
         :x="location(node, 'status').x + 11"
         :y="location(node, 'status').y + 13"
         font-size="10"
         font-weight="800"
       >
-        {{ node.limitDay }}
+        {{ Math.abs(node.limitDay) }}
       </text>
       <text
-        v-if="node.x && node.y && node.showStatus"
         :x="location(node, 'status').x + 18"
         :y="location(node, 'status').y + 5"
         font-size="6"
@@ -76,7 +80,6 @@
       :y="location(node, 'text').y"
       dominant-baseline="middle"
       :font-size="FONT_SIZE"
-      @click="handleClickNode(node)"
     >
       {{ node.text }}
     </text>
@@ -118,6 +121,10 @@ export default {
       required: true
     },
     handleClickNode: {
+      type: Function,
+      required: true
+    },
+    handleCheck: {
       type: Function,
       required: true
     }

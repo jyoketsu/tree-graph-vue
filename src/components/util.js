@@ -1,3 +1,45 @@
+import _ from "lodash";
+
+function findNodeById(nodes, id) {
+  const index = _.findIndex(nodes, function(o) {
+    return o.id === id;
+  });
+  return nodes[index];
+}
+
+// 生成标识符
+function guid(len, radix) {
+  var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".split(
+    ""
+  );
+  var uuid = [],
+    i;
+  radix = radix || chars.length;
+
+  if (len) {
+    // Compact form
+    for (i = 0; i < len; i++) uuid[i] = chars[0 | (Math.random() * radix)];
+  } else {
+    // rfc4122, version 4 form
+    var r;
+
+    // rfc4122 requires these characters
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = "-";
+    uuid[14] = "4";
+
+    // Fill in random data.  At i==19 set the high bits of clock sequence as
+    // per rfc4122, sec. 4.1.5
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | (Math.random() * 16);
+        uuid[i] = chars[i === 19 ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+
+  return uuid.join("");
+}
+
 function textWidth(fontSize) {
   const ele = document.createElement("span");
   ele.innerText = "傑";
@@ -48,10 +90,13 @@ function getNumberNum(str) {
 
 function getNodeWidth(node, fontSize, padding) {
   const str = node.text;
-  const full = getFullAngleNum(str);
+  let full = getFullAngleNum(str);
   const punctuation = getHalfAnglePunctuationNum(str);
   const alphabet = getAlphabetNum(str);
   const number = getNumberNum(str);
+  if (!str.length) {
+    full = 6;
+  }
   const width = textWidth(fontSize);
 
   const paddingWidth = padding ? padding * 1.5 : 10;
@@ -116,4 +161,103 @@ function nodeLocation(node, type, BLOCK_HEIGHT) {
   }
 }
 
-export { textWidth, getNodeWidth, getExtInfoWidth, nodeLocation };
+function changeNodeText(nodes, id, text) {
+  let node = findNodeById(nodes, id);
+  node.text = text;
+  return nodes;
+}
+
+function addChildNode(nodes, selectedId) {
+  const childNode = {
+    id: guid(8, 16),
+    text: "",
+    fatherId: selectedId,
+    children: [],
+    showAvatar: false,
+    showCheckbox: false,
+    checked: false,
+    showStatus: false,
+    hour: 0,
+    limitDay: 0
+  };
+  const selectedNode = findNodeById(nodes, selectedId);
+  selectedNode.children.push(childNode.id);
+  nodes.push(childNode);
+  return {
+    nodes: nodes,
+    addedNode: childNode
+  };
+}
+
+function addNext(nodes, selectedId) {
+  let selectedNode = findNodeById(nodes, selectedId);
+  let fatherNode = findNodeById(nodes, selectedNode.fatherId);
+  const nextNode = {
+    id: guid(8, 16),
+    text: "",
+    fatherId: fatherNode.id,
+    children: [],
+    showAvatar: false,
+    showCheckbox: false,
+    checked: false,
+    showStatus: false,
+    hour: 0,
+    limitDay: 0
+  };
+  let brotherKeys = fatherNode.children;
+  brotherKeys.splice(brotherKeys.indexOf(selectedId) + 1, 0, nextNode.id);
+  fatherNode.children = brotherKeys;
+  nodes.push(nextNode);
+  return {
+    nodes: nodes,
+    addedNode: nextNode
+  };
+}
+
+function deleteNode(nodes, selectedId) {
+  let selectedNode = findNodeById(nodes, selectedId);
+  let fatherNode = findNodeById(nodes, selectedNode.fatherId);
+  let brotherKeys = fatherNode.children;
+  brotherKeys.splice(brotherKeys.indexOf(selectedId), 1);
+  fatherNode.children = brotherKeys;
+
+  deleteNodeById(selectedNode);
+
+  function deleteNodeById(node) {
+    let children = node.children;
+    for (let index = 0; index < children.length; index++) {
+      let element = children[index];
+      let child = findNodeById(nodes, element);
+      deleteNodeById(child);
+    }
+    _.remove(nodes, function(n) {
+      return n.id === node.id;
+    });
+  }
+
+  return nodes;
+}
+
+function save(c_nodes) {
+  let nodes = JSON.parse(JSON.stringify(c_nodes));
+  for (let index = 0; index < nodes.length; index++) {
+    let element = nodes[index];
+    delete element.width;
+    delete element.x;
+    delete element.y;
+  }
+  return nodes;
+}
+
+export {
+  findNodeById,
+  textWidth,
+  getNodeWidth,
+  getExtInfoWidth,
+  nodeLocation,
+  changeNodeText,
+  addChildNode,
+  addNext,
+  deleteNode,
+  save
+};

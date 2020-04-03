@@ -1,125 +1,145 @@
 <template>
   <Drag>
-    <svg
-      class="tree-svg-single"
-      :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
-      :width="max_end"
-      :height="max_y + ITEM_HEIGHT"
+    <div
+      class="svg-wrapper"
+      tabindex="-1"
+      @keydown.enter="addNext"
+      @keydown.tab="addChild"
+      @keydown.delete="deleteNode"
+      v-on:keydown.ctrl.83.prevent="saveNodes"
+      v-on:keydown.meta.83.prevent="saveNodes"
+      ref="svgEl"
     >
-      <defs>
+      <svg
+        class="tree-svg-single"
+        :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
+        :width="max_end"
+        :height="max_y + ITEM_HEIGHT"
+      >
+        <defs>
+          <g
+            id="contract"
+            width="10"
+            height="10"
+            viewBox="0,0,10,10"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
+            <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
+          </g>
+          <g
+            id="expand"
+            width="10"
+            height="10"
+            viewBox="0,0,10,10"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
+            <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
+            <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
+          </g>
+          <g
+            id="checkbox-checked"
+            width="18"
+            height="18"
+            viewBox="0,0,18,18"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <circle cx="9" cy="9" r="9" fill="rgb(85, 85, 85)" />
+            <path d="M 4 9 L 8 13 L 14 5" stroke="#fff" stroke-width="1.6" />
+          </g>
+          <g
+            id="checkbox-uncheck"
+            width="18"
+            height="18"
+            viewBox="0,0,18,18"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <circle
+              cx="9"
+              cy="9"
+              r="9"
+              fill="rgb(216, 216, 216)"
+              stroke="#000000"
+            />
+          </g>
+          <g
+            id="status"
+            width="22"
+            height="22"
+            viewBox="0,0,22,22"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(85, 85, 85)" />
+            <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
+          </g>
+          <g
+            id="status-overdue"
+            width="22"
+            height="22"
+            viewBox="0,0,22,22"
+            preserveAspectRatio="xMinYMin meet"
+          >
+            <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(221, 53, 53)" />
+            <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
+          </g>
+        </defs>
         <g
-          id="contract"
-          width="10"
-          height="10"
-          viewBox="0,0,10,10"
-          preserveAspectRatio="xMinYMin meet"
+          v-for="(node, index) in c_nodes"
+          :key="index"
+          :class="`node-group-${index}`"
         >
-          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-        </g>
-        <g
-          id="expand"
-          width="10"
-          height="10"
-          viewBox="0,0,10,10"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle cx="5" cy="5" r="5" fill="#F0F0F0" stroke="#BFBFBF" />
-          <path d="M 2 5 H 8 5" stroke="#666" stroke-width="1.6" />
-          <path d="M 5 2  V 5 8" stroke="#666" stroke-width="1.6" />
-        </g>
-        <g
-          id="checkbox-checked"
-          width="18"
-          height="18"
-          viewBox="0,0,18,18"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle cx="9" cy="9" r="9" fill="rgb(85, 85, 85)" />
-          <path d="M 4 9 L 8 13 L 14 5" stroke="#fff" stroke-width="1.6" />
-        </g>
-        <g
-          id="checkbox-uncheck"
-          width="18"
-          height="18"
-          viewBox="0,0,18,18"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <circle
-            cx="9"
-            cy="9"
-            r="9"
-            fill="rgb(216, 216, 216)"
-            stroke="#000000"
+          <Node
+            :node="node"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
+            :FONT_SIZE="FONT_SIZE"
+            :startId="startId"
+            alias="single"
+            :selected="selected"
+            :handleClickNode="clickNode"
+            :handleCheck="handleCheck"
+          />
+          <path
+            v-if="node.x && node.y"
+            :d="fatherPath(node)"
+            fill="none"
+            stroke="rgb(215, 215, 215)"
+          />
+          <path
+            v-if="node.x && node.y && node.children.length && !node.contract"
+            :d="childPath(node)"
+            fill="none"
+            stroke="rgb(215, 215, 215)"
+          />
+          <Dot
+            :node="node"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
+            :handleClickDot="handleClickDot"
           />
         </g>
-        <g
-          id="status"
-          width="22"
-          height="22"
-          viewBox="0,0,22,22"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(85, 85, 85)" />
-          <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
-        </g>
-        <g
-          id="status-overdue"
-          width="22"
-          height="22"
-          viewBox="0,0,22,22"
-          preserveAspectRatio="xMinYMin meet"
-        >
-          <path d="M0 0 H 11 L 22 11 V 22 H 0 Z" fill="rgb(221, 53, 53)" />
-          <path d="M 11 0 H 22 V 11 Z" fill="rgb(53, 166, 248)" />
-        </g>
-      </defs>
-      <g
-        v-for="(node, index) in c_nodes"
-        :key="index"
-        :class="`node-group-${index}`"
-      >
-        <Node
-          :node="node"
-          :BLOCK_HEIGHT="BLOCK_HEIGHT"
-          :FONT_SIZE="FONT_SIZE"
-          :startId="startId"
-          alias="single"
-          :selected="selected"
-          :handleClickNode="clickNode"
-        />
-        <path
-          v-if="node.x && node.y"
-          :d="fatherPath(node)"
-          fill="none"
-          stroke="rgb(215, 215, 215)"
-        />
-        <path
-          v-if="node.x && node.y && node.children.length && !node.contract"
-          :d="childPath(node)"
-          fill="none"
-          stroke="rgb(215, 215, 215)"
-        />
-        <Dot
-          :node="node"
-          :BLOCK_HEIGHT="BLOCK_HEIGHT"
-          :handleClickDot="handleClickDot"
-        />
-      </g>
-    </svg>
+      </svg>
+    </div>
     <Input
-      v-if="showInput"
+      v-if="showInput || showNewInput"
       :selected="selected"
-      :handleChangeNodeText="handleCommit"
+      :handleChangeNodeText="handleChangeText"
     />
   </Drag>
 </template>
 <script>
-import calculate from "./treeService";
 import Drag from "../Drag";
 import Node from "../Node";
 import Dot from "../Dot";
 import Input from "../NodeInput";
+import calculate from "./treeService";
+import {
+  changeNodeText,
+  addNext,
+  addChildNode,
+  deleteNode,
+  findNodeById,
+  save
+} from "../util";
 export default {
   name: "tree-single",
   components: { Drag, Node, Dot, Input },
@@ -137,6 +157,11 @@ export default {
     startId: {
       type: String,
       required: true
+    },
+    // 文件模式
+    fileMode: {
+      type: Boolean,
+      default: true
     },
     // 节点元素高度
     ITEM_HEIGHT: {
@@ -170,10 +195,40 @@ export default {
         console.log("---handleClickDot---", node);
       }
     },
+    handleCheck: {
+      type: Function,
+      default: function(node) {
+        console.log("---handleCheck---", node);
+      }
+    },
     handleChangeNodeText: {
       type: Function,
       default: function(nodeId, text) {
-        console.log("---handleClickDot---", nodeId, text);
+        console.log("---handleChangeNodeText---", nodeId, text);
+      }
+    },
+    handleAddNext: {
+      type: Function,
+      default: function() {
+        console.log("---handleAddNext---");
+      }
+    },
+    handleAddChild: {
+      type: Function,
+      default: function() {
+        console.log("---handleAddChild---");
+      }
+    },
+    handleDeleteNode: {
+      type: Function,
+      default: function(selected) {
+        console.log("---handleDeleteNode---", selected);
+      }
+    },
+    handleSave: {
+      type: Function,
+      default: function(nodes) {
+        console.log("---handleSave---", nodes);
       }
     }
   },
@@ -186,7 +241,8 @@ export default {
       second_start_x: 0,
       second_end_x: 0,
       selected: {},
-      showInput: false
+      showInput: false,
+      showNewInput: false
     };
   },
   methods: {
@@ -209,14 +265,64 @@ export default {
       this.selected = node;
       this.handleClickNode(node);
     },
-    handleCommit: function(nodeId, text) {
+    handleChangeText: function(nodeId, text) {
       this.showInput = false;
+      this.showNewInput = false;
       this.handleChangeNodeText(nodeId, text);
+      if (this.fileMode) {
+        let nodes = changeNodeText(this.c_nodes, nodeId, text);
+        this.calculateNodes(nodes, this.startId);
+      }
     },
-    calculateNodes: function() {
+    addNext: function() {
+      if (!this.selected.id) {
+        return alert("请先选中节点！");
+      }
+      if (this.fileMode) {
+        let res = addNext(this.c_nodes, this.selected.id);
+        this.calculateNodes(res.nodes, this.startId);
+        this.handleAddNext(this.selected, res.addedNode);
+        let selected = findNodeById(this.c_nodes, res.addedNode.id);
+        this.selected = selected;
+        this.showNewInput = true;
+      }
+    },
+    addChild: function(e) {
+      e.preventDefault();
+      if (!this.selected.id) {
+        return alert("请先选中节点！");
+      }
+      if (this.fileMode) {
+        let res = addChildNode(this.c_nodes, this.selected.id);
+        this.calculateNodes(res.nodes, this.startId);
+        this.handleAddChild(this.selected, res.addedNode);
+        let selected = findNodeById(this.c_nodes, res.addedNode.id);
+        this.selected = selected;
+        this.showNewInput = true;
+      }
+    },
+    deleteNode: function() {
+      if (!this.selected.id) {
+        return alert("请先选中节点！");
+      }
+      if (this.selected.id === this.startId) {
+        return alert("根节点不允许删除！");
+      }
+      if (this.fileMode) {
+        this.handleDeleteNode(this.selected);
+        let nodes = deleteNode(this.c_nodes, this.selected.id, this.startId);
+        this.calculateNodes(nodes, this.startId);
+        this.selected = {};
+      }
+    },
+    saveNodes: function() {
+      const nodes = save(this.c_nodes);
+      this.handleSave(nodes);
+    },
+    calculateNodes: function(nodes, startId) {
       const cal = calculate(
-        this.nodes,
-        this.startId,
+        nodes,
+        startId,
         this.ITEM_HEIGHT,
         this.INDENT,
         this.FONT_SIZE
@@ -234,7 +340,9 @@ export default {
       immediate: true,
       deep: true,
       handler: function() {
-        this.calculateNodes();
+        if (!this.fileMode) {
+          this.calculateNodes(this.nodes, this.startId);
+        }
       }
     },
     selected: function(val, oldVal) {
@@ -244,7 +352,12 @@ export default {
     }
   },
   mounted() {
-    this.calculateNodes();
+    this.calculateNodes(this.nodes, this.startId);
   }
 };
 </script>
+<style scoped>
+.svg-wrapper:focus {
+  outline: none;
+}
+</style>

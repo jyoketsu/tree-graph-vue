@@ -1,5 +1,4 @@
-import _ from "lodash";
-import { getNodeWidth } from "../util";
+import { findNodeById, getNodeWidth } from "../util";
 
 export default function calculate(
   nodes,
@@ -102,12 +101,5 @@ export default function calculate(
 
     node.max_child_y = childY;
     return childY;
-  }
-
-  function findNodeById(nodes, id) {
-    const index = _.findIndex(nodes, function(o) {
-      return o.id === id;
-    });
-    return nodes[index];
   }
 }

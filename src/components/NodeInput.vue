@@ -11,7 +11,7 @@
     }"
     placeholder="请输入节点名"
     :value="selected.text"
-    @keyup.enter="handleCommit()"
+    @keydown.enter="handleCommit()"
   />
 </template>
 <script>

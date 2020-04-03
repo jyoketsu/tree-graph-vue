@@ -191,9 +191,9 @@ export default {
     let that = this;
     // setTimeout(() => {
     //   let temp = that.nodes;
-    //   temp[5].text = "Nuガンダムは伊達じゃない";
+    //   temp[5].text = "xxxxxxxxxxxxxxxxxx";
     //   that.nodes = temp;
-    // }, 15000);
+    // }, 5000);
   }
 };
 </script>
