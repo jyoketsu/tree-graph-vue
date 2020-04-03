@@ -21,8 +21,9 @@ export default {
         {
           id: "001",
           text: "项目管理",
-          fatherId: "001",
-          children: ["002", "003", "004", "005"],
+          fatherId: "",
+          // children: ["002", "003", "004", "005"],
+          children: ["002"],
           contract: false,
           showAvatar: true
         },
@@ -141,6 +142,7 @@ export default {
           text: "5月计划",
           fatherId: "003",
           children: ["012", "013", "014"],
+          contract: false,
           showAvatar: true,
           showCheckbox: true,
           checked: true,

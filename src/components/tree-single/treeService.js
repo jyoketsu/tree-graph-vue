@@ -19,9 +19,7 @@ export default function calculate(
   let second_start_x;
   let second_end_x;
 
-  if (!root.contract) {
-    location(nodes, root, 10, 10);
-  }
+  location(nodes, root, 10, 10);
 
   return {
     max_x: MAX_X,
@@ -65,6 +63,7 @@ export default function calculate(
         // 最后一个子节点
         if (index + 1 !== childrenIds.length) {
           lastChildY = childY;
+          console.log("最后", node.text);
         }
       }
     }

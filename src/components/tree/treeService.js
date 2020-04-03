@@ -37,13 +37,17 @@ export default function calculate(
     }
   }
 
+  if (MAX_END === rootWidth) {
+    MAX_END = MAX_END * 2;
+  }
+
   // 根节点坐标
-  root.x = MAX_X / 2;
+  root.x = (MAX_END - root.width) / 2;
   root.y = 1;
 
   return {
     max_x: MAX_X,
-    max_y: MAX_Y,
+    max_y: MAX_Y + ITEM_HEIGHT,
     max_end: MAX_END,
     second_start_x: second_start_x,
     second_end_x: second_end_x,

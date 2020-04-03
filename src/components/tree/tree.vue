@@ -145,7 +145,7 @@
           <Dot
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
-            :handleClickDot="handleClickDot"
+            :handleClickDot="handleDot"
           />
         </g>
       </svg>
@@ -170,6 +170,7 @@ import {
   addChildNode,
   deleteNode,
   findNodeById,
+  dot,
   save
 } from "../util";
 export default {
@@ -329,6 +330,13 @@ export default {
       this.selected = node;
       this.handleClickNode(node);
     },
+    handleDot: function(node) {
+      if (this.fileMode) {
+        let nodes = dot(this.c_nodes, node.id);
+        this.calculateNodes(nodes, this.startId);
+      }
+      this.handleClickDot(node);
+    },
     handleChangeText: function(nodeId, text) {
       this.showInput = false;
       this.showNewInput = false;
@@ -336,11 +344,15 @@ export default {
       if (this.fileMode) {
         let nodes = changeNodeText(this.c_nodes, nodeId, text);
         this.calculateNodes(nodes, this.startId);
+        this.$refs.svgEl.focus();
       }
     },
     addNext: function() {
       if (!this.selected.id) {
         return alert("请先选中节点！");
+      }
+      if (this.selected.id===this.startId) {
+        return alert("根节点无法添加兄弟节点！");
       }
       if (this.fileMode) {
         let res = addNext(this.c_nodes, this.selected.id);

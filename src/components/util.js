@@ -163,6 +163,9 @@ function nodeLocation(node, type, BLOCK_HEIGHT) {
 
 function changeNodeText(nodes, id, text) {
   let node = findNodeById(nodes, id);
+  if (!text) {
+    text = "新增节点";
+  }
   node.text = text;
   return nodes;
 }
@@ -238,6 +241,19 @@ function deleteNode(nodes, selectedId) {
   return nodes;
 }
 
+function dot(c_nodes, nodeId) {
+  let nodes = JSON.parse(JSON.stringify(c_nodes));
+  for (let index = 0; index < nodes.length; index++) {
+    let element = nodes[index];
+    delete element.width;
+    delete element.x;
+    delete element.y;
+  }
+  let selectedNode = findNodeById(nodes, nodeId);
+  selectedNode.contract = selectedNode.contract ? false : true;
+  return nodes;
+}
+
 function save(c_nodes) {
   let nodes = JSON.parse(JSON.stringify(c_nodes));
   for (let index = 0; index < nodes.length; index++) {
@@ -259,5 +275,6 @@ export {
   addChildNode,
   addNext,
   deleteNode,
+  dot,
   save
 };
