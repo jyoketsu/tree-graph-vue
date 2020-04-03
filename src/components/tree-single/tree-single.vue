@@ -210,14 +210,14 @@ export default {
     },
     handleAddNext: {
       type: Function,
-      default: function() {
-        console.log("---handleAddNext---");
+       default: function(selected, added) {
+        console.log("---handleAddNext---", selected, added);
       }
     },
     handleAddChild: {
       type: Function,
-      default: function() {
-        console.log("---handleAddChild---");
+      default: function(selected, added) {
+        console.log("---handleAddChild---", selected, added);
       }
     },
     handleDeleteNode: {
@@ -262,6 +262,8 @@ export default {
     clickNode: function(node) {
       if (this.selected.id === node.id) {
         this.showInput = true;
+      } else {
+        this.$refs.svgEl.focus();
       }
       this.selected = node;
       this.handleClickNode(node);

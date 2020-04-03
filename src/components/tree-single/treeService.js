@@ -51,10 +51,11 @@ export default function calculate(
       for (let index = 0; index < childrenIds.length; index++) {
         if (index === 0) {
           childY += ITEM_HEIGHT * 1.3;
+          lastChildY += ITEM_HEIGHT * 1.3;
         } else {
           childY += ITEM_HEIGHT;
+          lastChildY += ITEM_HEIGHT;
         }
-        lastChildY += ITEM_HEIGHT;
         if (childY > MAX_Y) {
           MAX_Y = childY;
         }
@@ -63,7 +64,6 @@ export default function calculate(
         // 最后一个子节点
         if (index + 1 !== childrenIds.length) {
           lastChildY = childY;
-          console.log("最后", node.text);
         }
       }
     }

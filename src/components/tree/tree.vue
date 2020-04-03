@@ -297,7 +297,7 @@ export default {
     // 有子节点时的下部线条
     childPath: function(node) {
       const M = `M ${node.x + 5} ${node.y + this.BLOCK_HEIGHT}`;
-      const V = `V ${node.max_child_y + this.BLOCK_HEIGHT / 2}`;
+      const V = `V ${node.last_child_y + this.BLOCK_HEIGHT / 2}`;
       return `${M} ${V}`;
     },
     // 根节点底部水平线

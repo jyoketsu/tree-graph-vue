@@ -103,7 +103,7 @@ export default function calculate(
       }
     }
 
-    node.max_child_y = childY;
+    node.last_child_y = childY;
     return childY;
   }
 }

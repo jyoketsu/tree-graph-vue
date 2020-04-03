@@ -1,7 +1,7 @@
 {
   "name": "tree-graph-vue",
-  "description": "A Vue.js project",
-  "version": "1.0.4",
+  "description": "tree graph for vue / vue树状思维导图组件",
+  "version": "1.0.5",
   "author": "xujie",
   "license": "MIT",
   "private": false,

@@ -42,10 +42,24 @@ export default {
   methods: {
     handleCommit: function(e) {
       this.handleChangeNodeText(this.selected.id, this.$refs.inputEl.value);
+    },
+    handleClick: function(e) {
+      if (e.type === "touchend") this.isTouch = true;
+      if (e.type === "click" && this.isTouch) return;
+      const el = this.$refs.inputEl;
+      if (el && !el.contains(e.target)) {
+        this.handleChangeNodeText(this.selected.id, this.$refs.inputEl.value);
+      }
     }
   },
   mounted() {
     this.$refs.inputEl.focus();
+    document.addEventListener("touchend", this.handleClick, true);
+    document.addEventListener("click", this.handleClick, true);
+  },
+  destroyed() {
+    document.removeEventListener("touchend", this.handleClick, true);
+    document.removeEventListener("click", this.handleClick, true);
   }
 };
 </script>

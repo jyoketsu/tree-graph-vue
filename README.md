@@ -12,7 +12,7 @@
 
 树状思维导图组件 for vue
 
-## 在线demo
+## 在线DEMO OnlineDemo
 https://jyoketsu.github.io/tree-graph-vue/
 
 ## 编译 Build Setup
