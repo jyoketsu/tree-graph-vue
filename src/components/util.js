@@ -254,6 +254,12 @@ function dot(c_nodes, nodeId) {
   return nodes;
 }
 
+function checkNode(c_nodes, nodeId) {
+  let node = findNodeById(c_nodes, nodeId);
+  node.checked = !node.checked;
+  return c_nodes;
+}
+
 function save(c_nodes) {
   let nodes = JSON.parse(JSON.stringify(c_nodes));
   for (let index = 0; index < nodes.length; index++) {
@@ -276,5 +282,6 @@ export {
   addNext,
   deleteNode,
   dot,
+  checkNode,
   save
 };

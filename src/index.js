@@ -1,7 +1,6 @@
 import tree from "./components/tree/index";
-import singleTree from "./components/tree-single/index";
 
-const components = [tree, singleTree];
+const components = [tree];
 const install = function(Vue, opts = {}) {
   components.map(component => {
     Vue.component(component.name, component);
@@ -13,4 +12,4 @@ if (typeof window !== "undefined" && window.Vue) {
   install(window.Vue);
 }
 
-export default { install, tree, singleTree };
+export default { install, tree };

@@ -113,7 +113,6 @@ export default {
     },
     // 别名
     alias: {
-      type: String,
       required: true
     },
     selected: {

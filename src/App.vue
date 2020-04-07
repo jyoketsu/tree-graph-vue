@@ -1,15 +1,36 @@
 <template>
   <div id="app">
-    <h2>树状思维导图组件 for Vue</h2>
-    <h3>多列视图</h3>
+    <h2>樹狀思維導圖組件 Dendrogram Component</h2>
+    <h3>操作 Operation</h3>
+    <div class="operation-wrapper">
+      <span>添加子節點：Tab</span>
+      <span>向後添加兄弟節點：Enter</span>
+      <span>刪除節點：Delete</span>
+      <span>編輯節點名：選中節點後點擊節點，按下Enter完成</span>
+      <span>保存數據：Command + S / Ctrl + S</span>
+      <hr />
+      <span>Add Child Node：Tab</span>
+      <span>Add sibling nodes backward：Enter</span>
+      <span>Delete Nodes：Delete</span>
+      <span>
+        Edit Node：After selecting the node, click the node and press Enter to
+        complete</span
+      >
+      <span>Save Data：Command + S / Ctrl + S</span>
+    </div>
+    <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
-    <h3>单列视图</h3>
-    <tree-single :nodes="nodes" :startId="nodes[0].id" />
+    <h3>單列視圖 Single Column</h3>
+    <tree :nodes="nodes" :startId="nodes[0].id" :singleColumn="true" />
+    <h3>Only Root</h3>
+    <tree :nodes="one" :startId="one[0].id" />
+    <button class="task-button" v-on:click="$emit('handleEditNode')">
+      設為任務 Set As Task
+    </button>
   </div>
 </template>
 
 <script>
-// import tree from "./components/tree/tree";
 import Vue from "vue";
 import TreeGraph from "./index";
 Vue.use(TreeGraph);
@@ -20,16 +41,15 @@ export default {
       nodes: [
         {
           id: "001",
-          text: "项目管理",
+          text: "項目管理",
           fatherId: "",
-          // children: ["002", "003", "004", "005"],
-          children: ["002"],
+          children: ["002", "003", "004", "005"],
           contract: false,
           showAvatar: true
         },
         {
           id: "002",
-          text: "计划进度",
+          text: "計劃進度",
           fatherId: "001",
           children: ["006", "007"],
           contract: false,
@@ -42,7 +62,7 @@ export default {
         },
         {
           id: "003",
-          text: "项目状态",
+          text: "項目狀態",
           fatherId: "001",
           children: ["010", "011"],
           showAvatar: true,
@@ -54,7 +74,7 @@ export default {
         },
         {
           id: "004",
-          text: "项目会议",
+          text: "項目會議",
           fatherId: "001",
           children: [],
           showAvatar: true,
@@ -66,7 +86,7 @@ export default {
         },
         {
           id: "005",
-          text: "项目验收",
+          text: "項目驗收",
           fatherId: "001",
           children: [],
           showAvatar: true,
@@ -78,7 +98,7 @@ export default {
         },
         {
           id: "006",
-          text: "阶段一",
+          text: "階段壹",
           fatherId: "002",
           contract: false,
           children: ["008", "009"],
@@ -91,7 +111,7 @@ export default {
         },
         {
           id: "007",
-          text: "阶段二",
+          text: "階段二",
           fatherId: "002",
           children: [],
           showAvatar: true,
@@ -103,7 +123,7 @@ export default {
         },
         {
           id: "008",
-          text: "备份json文件",
+          text: "備份json文件",
           fatherId: "006",
           children: [],
           showAvatar: true,
@@ -115,7 +135,7 @@ export default {
         },
         {
           id: "009",
-          text: "还原数据",
+          text: "還原數據",
           fatherId: "006",
           children: [],
           showAvatar: true,
@@ -127,7 +147,7 @@ export default {
         },
         {
           id: "010",
-          text: "4月计划",
+          text: "4月計劃",
           fatherId: "003",
           children: [],
           showAvatar: true,
@@ -139,7 +159,7 @@ export default {
         },
         {
           id: "011",
-          text: "5月计划",
+          text: "5月計劃",
           fatherId: "003",
           children: ["012", "013", "014"],
           contract: false,
@@ -152,7 +172,7 @@ export default {
         },
         {
           id: "012",
-          text: "原型&界面设计",
+          text: "原型&界面設計",
           fatherId: "011",
           children: [],
           showAvatar: true,
@@ -164,7 +184,7 @@ export default {
         },
         {
           id: "013",
-          text: "开发",
+          text: "開發",
           fatherId: "011",
           children: [],
           showAvatar: true,
@@ -176,7 +196,7 @@ export default {
         },
         {
           id: "014",
-          text: "测试",
+          text: "測試",
           fatherId: "011",
           children: [],
           showAvatar: true,
@@ -185,6 +205,16 @@ export default {
           showStatus: true,
           hour: 0.1,
           limitDay: 2
+        }
+      ],
+      one: [
+        {
+          id: "001",
+          text: "root",
+          fatherId: "",
+          children: [],
+          contract: false,
+          showAvatar: true
         }
       ]
     };
@@ -217,5 +247,17 @@ body {
 }
 html {
   background-color: rgb(238, 238, 238);
+}
+.operation-wrapper {
+  padding: 15px;
+}
+.operation-wrapper > span {
+  display: block;
+  text-align: left;
+}
+.task-button {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
 }
 </style>

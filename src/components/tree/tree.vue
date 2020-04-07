@@ -8,6 +8,7 @@
       @keydown.delete="deleteNode"
       v-on:keydown.ctrl.83.prevent="saveNodes"
       v-on:keydown.meta.83.prevent="saveNodes"
+      v-on:handleEditNode="handleEditNode"
       ref="svgEl"
     >
       <svg
@@ -94,54 +95,74 @@
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
             :FONT_SIZE="FONT_SIZE"
             :startId="startId"
-            alias="mutil"
+            :alias="new Date().getTime()"
             :selected="selected"
             :handleClickNode="clickNode"
-            :handleCheck="handleCheck"
+            :handleCheck="clickCheck"
           />
-          <!-- 线条：左侧横线 -->
-          <path
-            v-if="
-              node.x && node.y && node.fatherId && node.fatherId !== startId
-            "
-            :d="fatherPath(node)"
-            fill="none"
-            stroke="rgb(215, 215, 215)"
-          />
-          <!-- 线条：纵线 -->
-          <path
-            v-if="
-              node.x &&
-                node.y &&
-                node.children.length &&
-                !node.contract &&
-                node.id !== startId
-            "
-            :d="childPath(node)"
-            fill="none"
-            stroke="rgb(215, 215, 215)"
-          />
-          <!-- 根节点底部线条 -->
-          <path
-            v-if="node.id === startId && node.children.length && !node.contract"
-            :d="rootHpaht(node)"
-            fill="none"
-            stroke="rgb(215, 215, 215)"
-          />
-          <path
-            v-if="node.id === startId && node.children.length && !node.contract"
-            :d="rootVpath(node)"
-            fill="none"
-            stroke="rgb(215, 215, 215)"
-          />
-          <path
-            v-if="
-              node.x && node.y && node.fatherId && node.fatherId === startId
-            "
-            :d="rootBottomVpath(node)"
-            fill="none"
-            stroke="rgb(215, 215, 215)"
-          />
+          <g class="multi-column" v-if="isSingle">
+            <path
+              v-if="node.x && node.y"
+              :d="fatherPath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+            <path
+              v-if="node.x && node.y && node.children.length && !node.contract"
+              :d="childPath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+          </g>
+          <g class="single-column" v-else>
+            <!-- 线条：左侧横线 -->
+            <path
+              v-if="
+                node.x && node.y && node.fatherId && node.fatherId !== startId
+              "
+              :d="fatherPath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+            <!-- 线条：纵线 -->
+            <path
+              v-if="
+                node.x &&
+                  node.y &&
+                  node.children.length &&
+                  !node.contract &&
+                  node.id !== startId
+              "
+              :d="childPath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+            <!-- 根节点底部线条 -->
+            <path
+              v-if="
+                node.id === startId && node.children.length && !node.contract
+              "
+              :d="rootHpaht(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+            <path
+              v-if="
+                node.id === startId && node.children.length && !node.contract
+              "
+              :d="rootVpath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+            <path
+              v-if="
+                node.x && node.y && node.fatherId && node.fatherId === startId
+              "
+              :d="rootBottomVpath(node)"
+              fill="none"
+              stroke="rgb(215, 215, 215)"
+            />
+          </g>
           <Dot
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
@@ -171,7 +192,8 @@ import {
   deleteNode,
   findNodeById,
   dot,
-  save
+  save,
+  checkNode
 } from "../util";
 export default {
   name: "tree",
@@ -190,6 +212,11 @@ export default {
     startId: {
       type: String,
       required: true
+    },
+    // 单列视图
+    singleColumn: {
+      type: Boolean,
+      default: false
     },
     // 文件模式
     fileMode: {
@@ -270,7 +297,7 @@ export default {
     handleSave: {
       type: Function,
       default: function(nodes) {
-        console.log("---handleSave---", nodes);
+        alert(JSON.stringify(nodes));
       }
     }
   },
@@ -284,7 +311,8 @@ export default {
       second_end_x: 0,
       selected: {},
       showInput: false,
-      showNewInput: false
+      showNewInput: false,
+      isSingle: this.singleColumn
     };
   },
   methods: {
@@ -330,10 +358,16 @@ export default {
       this.selected = node;
       this.handleClickNode(node);
     },
+    clickCheck: function(node) {
+      if (this.fileMode) {
+        this.c_nodes = checkNode(this.c_nodes, node.id);
+      }
+      this.handleCheck(node);
+    },
     handleDot: function(node) {
       if (this.fileMode) {
         let nodes = dot(this.c_nodes, node.id);
-        this.calculateNodes(nodes, this.startId);
+        this.calculateNodes(nodes, this.startId, this.singleColumn);
       }
       this.handleClickDot(node);
     },
@@ -343,20 +377,23 @@ export default {
       this.handleChangeNodeText(nodeId, text);
       if (this.fileMode) {
         let nodes = changeNodeText(this.c_nodes, nodeId, text);
-        this.calculateNodes(nodes, this.startId);
+        this.calculateNodes(nodes, this.startId, this.singleColumn);
         this.$refs.svgEl.focus();
       }
+    },
+    handleEditNode: function() {
+      alert("aaaaaaa");
     },
     addNext: function() {
       if (!this.selected.id) {
         return alert("请先选中节点！");
       }
-      if (this.selected.id===this.startId) {
+      if (this.selected.id === this.startId) {
         return alert("根节点无法添加兄弟节点！");
       }
       if (this.fileMode) {
         let res = addNext(this.c_nodes, this.selected.id);
-        this.calculateNodes(res.nodes, this.startId);
+        this.calculateNodes(res.nodes, this.startId, this.singleColumn);
         this.handleAddNext(this.selected, res.addedNode);
         let selected = findNodeById(this.c_nodes, res.addedNode.id);
         this.selected = selected;
@@ -370,7 +407,7 @@ export default {
       }
       if (this.fileMode) {
         let res = addChildNode(this.c_nodes, this.selected.id);
-        this.calculateNodes(res.nodes, this.startId);
+        this.calculateNodes(res.nodes, this.startId, this.singleColumn);
         this.handleAddChild(this.selected, res.addedNode);
         let selected = findNodeById(this.c_nodes, res.addedNode.id);
         this.selected = selected;
@@ -387,18 +424,21 @@ export default {
       if (this.fileMode) {
         this.handleDeleteNode(this.selected);
         let nodes = deleteNode(this.c_nodes, this.selected.id, this.startId);
-        this.calculateNodes(nodes, this.startId);
+        this.calculateNodes(nodes, this.startId, this.singleColumn);
         this.selected = {};
       }
     },
     saveNodes: function() {
-      const nodes = save(this.c_nodes);
+      if (this.fileMode) {
+        const nodes = save(this.c_nodes);
+      }
       this.handleSave(nodes);
     },
-    calculateNodes: function(nodes, startId) {
+    calculateNodes: function(nodes, startId, singleColumn) {
       const cal = calculate(
         nodes,
         startId,
+        singleColumn,
         this.ITEM_HEIGHT,
         this.INDENT,
         this.FONT_SIZE
@@ -409,6 +449,7 @@ export default {
       this.max_end = cal.max_end;
       this.second_start_x = cal.second_start_x;
       this.second_end_x = cal.second_end_x;
+      this.isSingle = cal.isSingle;
     }
   },
   watch: {
@@ -417,7 +458,7 @@ export default {
       deep: true,
       handler: function() {
         if (!this.fileMode) {
-          this.calculateNodes(this.nodes, this.startId);
+          this.calculateNodes(this.nodes, this.startId, this.singleColumn);
         }
       }
     },
@@ -428,7 +469,7 @@ export default {
     }
   },
   mounted() {
-    this.calculateNodes(this.nodes, this.startId);
+    this.calculateNodes(this.nodes, this.startId, this.singleColumn);
   }
 };
 </script>

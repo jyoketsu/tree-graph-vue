@@ -1,11 +1,18 @@
 {
   "name": "tree-graph-vue",
   "description": "tree graph for vue / vue树状思维导图组件",
-  "version": "1.0.5",
+  "homepage": "https://jyoketsu.github.io/tree-graph-vue/",
+  "version": "1.1.0",
   "author": "xujie",
   "license": "MIT",
   "private": false,
   "main": "dist/tree-graph-vue.js",
+  "keywords": [
+    "vue",
+    "tree",
+    "dendrogram",
+    "graph"
+  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",

@@ -9,13 +9,11 @@
 ```
 
 # tree-graph-vue
+vue樹狀思維導圖組件 Dendrogram Component
 
-树状思维导图组件 for vue
+## [在線 DEMO OnlineDemo](https://jyoketsu.github.io/tree-graph-vue/)
 
-## 在线DEMO OnlineDemo
-https://jyoketsu.github.io/tree-graph-vue/
-
-## 编译 Build Setup
+## 編譯 Build Setup
 
 ```bash
 # install dependencies
@@ -28,7 +26,7 @@ yarn dev
 yarn build
 ```
 
-## 安装 Install
+## 安裝 Install
 
 ```
 yarn add tree-graph-vue
@@ -39,9 +37,9 @@ yarn add tree-graph-vue
 ```html
 <template>
   <div id="app">
-    <h3>多列视图</h3>
+    <h3>多列視圖</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
-    <h3>单列视图</h3>
+    <h3>單列視圖</h3>
     <tree-single :nodes="nodes" :startId="nodes[0].id" />
   </div>
 </template>
@@ -54,47 +52,48 @@ Vue.use(TreeGraph);
 
 ## 操作
 
-| 操作                | 按键             |
+| 操作                | 按鍵             |
 | ------------------- | ---------------- |
-| 新增子节点          | Tab              |
-| 新增兄弟节点        | Enter            |
-| 删除节点            | Delete           |
-| 保存树（file 模式） | Command/Ctrl + S |
+| 新增子節點          | Tab              |
+| 新增兄弟節點        | Enter            |
+| 刪除節點            | Delete           |
+| 保存樹（file 模式） | Command/Ctrl + S |
 
-## 组件属性
+## 組件屬性
 
-| 属性                 | 说明                                            | 类型     | 是否必须 | 默认值 |
+| 屬性                 | 說明                                            | 類型     | 是否必須 | 默認值 |
 | -------------------- | ----------------------------------------------- | -------- | -------- | ------ |
-| nodes                | 节点                                            | Array    | 是       | -      |
-| startId              | 根节点 id                                       | String   | 是       | -      |
-| fileMode             | 是否为文件模式 文件模式：将整颗树作为整体来操作 | Boolean  | 否       | true   |
-| ITEM_HEIGHT          | 节点元素高度                                    | Number   | 否       | 50     |
-| BLOCK_HEIGHT         | 节点块高度                                      | Number   | 否       | 30     |
-| FONT_SIZE            | 节点字体大小                                    | Number   | 否       | 14     |
-| INDENT               | 缩进                                            | Number   | 否       | 25     |
-| AVATAR_WIDTH         | 头像宽度                                        | Number   | 否       | 22     |
-| CHECK_BOX_WIDTH      | 勾选框宽度                                      | Number   | 否       | 18     |
-| handleClickNode      | 点击节点事件                                    | Function | 否       | -      |
-| handleClickDot       | 点击收起/展开事件                               | Function | 否       | -      |
-| handleCheck          | 点击勾选框事件                                  | Function | 否       | -      |
-| handleChangeNodeText | 更改节点名事件                                  | Function | 否       | -      |
-| handleAddNext        | 向后添加兄弟节点事件                            | Function | 否       | -      |
-| handleAddChild       | 添加子节点事件                                  | Function | 否       | -      |
-| handleDeleteNode     | 删除节点事件                                    | Function | 否       | -      |
-| handleSave           | 保存树                                          | Function | 否       | -      |
+| nodes                | 節點                                            | Array    | 是       | -      |
+| startId              | 根節點 id                                       | String   | 是       | -      |
+| singleColumn         | 是否是單列視圖                                  | Boolean  | 否       | false  |
+| fileMode             | 是否為文件模式 文件模式：將整顆樹作為整體來操作 | Boolean  | 否       | true   |
+| ITEM_HEIGHT          | 節點元素高度                                    | Number   | 否       | 50     |
+| BLOCK_HEIGHT         | 節點塊高度                                      | Number   | 否       | 30     |
+| FONT_SIZE            | 節點字體大小                                    | Number   | 否       | 14     |
+| INDENT               | 縮進                                            | Number   | 否       | 25     |
+| AVATAR_WIDTH         | 頭像寬度                                        | Number   | 否       | 22     |
+| CHECK_BOX_WIDTH      | 勾選框寬度                                      | Number   | 否       | 18     |
+| handleClickNode      | 點擊節點事件                                    | Function | 否       | -      |
+| handleClickDot       | 點擊收起/展開事件                               | Function | 否       | -      |
+| handleCheck          | 點擊勾選框事件                                  | Function | 否       | -      |
+| handleChangeNodeText | 更改節點名事件                                  | Function | 否       | -      |
+| handleAddNext        | 向後添加兄弟節點事件                            | Function | 否       | -      |
+| handleAddChild       | 添加子節點事件                                  | Function | 否       | -      |
+| handleDeleteNode     | 刪除節點事件                                    | Function | 否       | -      |
+| handleSave           | 保存樹                                          | Function | 否       | -      |
 
-## 节点属性
+## 節點屬性
 
-| 属性         | 说明                 | 类型    |
+| 屬性         | 說明                 | 類型    |
 | ------------ | -------------------- | ------- |
-| id           | 节点 id              | String  |
-| text         | 节点文本             | String  |
-| fatherId     | 父节点 id            | String  |
-| children     | 子节点 id            | Array   |
-| contract     | 是否收起子节点       | Boolean |
-| showAvatar   | 是否显示头像         | Boolean |
-| showCheckbox | 是否显示勾选框       | Boolean |
-| checked      | 是否勾选             | Boolean |
-| showStatus   | 是否显示节点状态     | Boolean |
-| hour         | 节点（任务）工时     | Number  |
-| limitDay     | 节点（任务）剩余天数 | Number  |
+| id           | 節點 id              | String  |
+| text         | 節點文本             | String  |
+| fatherId     | 父節點 id            | String  |
+| children     | 子節點 id            | Array   |
+| contract     | 是否收起子節點       | Boolean |
+| showAvatar   | 是否顯示頭像         | Boolean |
+| showCheckbox | 是否顯示勾選框       | Boolean |
+| checked      | 是否勾選             | Boolean |
+| showStatus   | 是否顯示節點狀態     | Boolean |
+| hour         | 節點（任務）工時     | Number  |
+| limitDay     | 節點（任務）剩余天數 | Number  |
