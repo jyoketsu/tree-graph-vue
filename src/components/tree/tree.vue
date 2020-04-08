@@ -8,7 +8,6 @@
       @keydown.delete="deleteNode"
       v-on:keydown.ctrl.83.prevent="saveNodes"
       v-on:keydown.meta.83.prevent="saveNodes"
-      v-on:handleEditNode="handleEditNode"
       ref="svgEl"
     >
       <svg
@@ -193,7 +192,8 @@ import {
   findNodeById,
   dot,
   save,
-  checkNode
+  checkNode,
+  editNode
 } from "../util";
 export default {
   name: "tree",
@@ -218,8 +218,8 @@ export default {
       type: Boolean,
       default: false
     },
-    // 文件模式
-    fileMode: {
+    // 非受控模式
+    uncontrolled: {
       type: Boolean,
       default: true
     },
@@ -297,7 +297,7 @@ export default {
     handleSave: {
       type: Function,
       default: function(nodes) {
-        alert(JSON.stringify(nodes));
+        alert(nodes ? JSON.stringify(nodes) : "保存");
       }
     }
   },
@@ -359,13 +359,13 @@ export default {
       this.handleClickNode(node);
     },
     clickCheck: function(node) {
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         this.c_nodes = checkNode(this.c_nodes, node.id);
       }
       this.handleCheck(node);
     },
     handleDot: function(node) {
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         let nodes = dot(this.c_nodes, node.id);
         this.calculateNodes(nodes, this.startId, this.singleColumn);
       }
@@ -375,14 +375,11 @@ export default {
       this.showInput = false;
       this.showNewInput = false;
       this.handleChangeNodeText(nodeId, text);
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         let nodes = changeNodeText(this.c_nodes, nodeId, text);
         this.calculateNodes(nodes, this.startId, this.singleColumn);
         this.$refs.svgEl.focus();
       }
-    },
-    handleEditNode: function() {
-      alert("aaaaaaa");
     },
     addNext: function() {
       if (!this.selected.id) {
@@ -391,7 +388,7 @@ export default {
       if (this.selected.id === this.startId) {
         return alert("根节点无法添加兄弟节点！");
       }
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         let res = addNext(this.c_nodes, this.selected.id);
         this.calculateNodes(res.nodes, this.startId, this.singleColumn);
         this.handleAddNext(this.selected, res.addedNode);
@@ -405,7 +402,7 @@ export default {
       if (!this.selected.id) {
         return alert("请先选中节点！");
       }
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         let res = addChildNode(this.c_nodes, this.selected.id);
         this.calculateNodes(res.nodes, this.startId, this.singleColumn);
         this.handleAddChild(this.selected, res.addedNode);
@@ -421,7 +418,7 @@ export default {
       if (this.selected.id === this.startId) {
         return alert("根节点不允许删除！");
       }
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         this.handleDeleteNode(this.selected);
         let nodes = deleteNode(this.c_nodes, this.selected.id, this.startId);
         this.calculateNodes(nodes, this.startId, this.singleColumn);
@@ -429,10 +426,12 @@ export default {
       }
     },
     saveNodes: function() {
-      if (this.fileMode) {
+      if (this.uncontrolled) {
         const nodes = save(this.c_nodes);
+        this.handleSave(nodes);
+      } else {
+        this.handleSave();
       }
-      this.handleSave(nodes);
     },
     calculateNodes: function(nodes, startId, singleColumn) {
       const cal = calculate(
@@ -457,7 +456,7 @@ export default {
       immediate: true,
       deep: true,
       handler: function() {
-        if (!this.fileMode) {
+        if (!this.uncontrolled) {
           this.calculateNodes(this.nodes, this.startId, this.singleColumn);
         }
       }

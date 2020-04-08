@@ -21,12 +21,14 @@
     <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
     <h3>單列視圖 Single Column</h3>
-    <tree :nodes="nodes" :startId="nodes[0].id" :singleColumn="true" />
+    <tree
+      :nodes="nodes"
+      :startId="nodes[0].id"
+      :singleColumn="true"
+      ref="treeRef"
+    />
     <h3>Only Root</h3>
     <tree :nodes="one" :startId="one[0].id" />
-    <button class="task-button" v-on:click="$emit('handleEditNode')">
-      設為任務 Set As Task
-    </button>
   </div>
 </template>
 
@@ -45,7 +47,8 @@ export default {
           fatherId: "",
           children: ["002", "003", "004", "005"],
           contract: false,
-          showAvatar: true
+          showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png"
         },
         {
           id: "002",
@@ -54,6 +57,7 @@ export default {
           children: ["006", "007"],
           contract: false,
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -66,6 +70,7 @@ export default {
           fatherId: "001",
           children: ["010", "011"],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -78,6 +83,8 @@ export default {
           fatherId: "001",
           children: [],
           showAvatar: true,
+          avatarUri:
+            "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -90,6 +97,8 @@ export default {
           fatherId: "001",
           children: [],
           showAvatar: true,
+          avatarUri:
+            "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -103,6 +112,7 @@ export default {
           contract: false,
           children: ["008", "009"],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -115,6 +125,7 @@ export default {
           fatherId: "002",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -127,6 +138,7 @@ export default {
           fatherId: "006",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -139,6 +151,7 @@ export default {
           fatherId: "006",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: false,
           showStatus: true,
@@ -151,6 +164,7 @@ export default {
           fatherId: "003",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -164,6 +178,7 @@ export default {
           children: ["012", "013", "014"],
           contract: false,
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -176,6 +191,7 @@ export default {
           fatherId: "011",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -188,6 +204,7 @@ export default {
           fatherId: "011",
           children: [],
           showAvatar: true,
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -200,6 +217,8 @@ export default {
           fatherId: "011",
           children: [],
           showAvatar: true,
+          avatarUri:
+            "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",
           showCheckbox: true,
           checked: true,
           showStatus: true,
@@ -210,22 +229,30 @@ export default {
       one: [
         {
           id: "001",
-          text: "root",
+          text: "根节点",
           fatherId: "",
           children: [],
-          contract: false,
-          showAvatar: true
+          contract: false
         }
       ]
     };
   },
+  methods: {
+    changeNode: function(node) {
+      this.$refs.treeRef.$emit("editNode", {
+        showAvatar: true,
+        avatarUri:
+          "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",
+        showCheckbox: true,
+        checked: true,
+        showStatus: true,
+        hour: 0.1,
+        limitDay: 2
+      });
+    }
+  },
   mounted() {
     let that = this;
-    // setTimeout(() => {
-    //   let temp = that.nodes;
-    //   temp[5].text = "xxxxxxxxxxxxxxxxxx";
-    //   that.nodes = temp;
-    // }, 5000);
   }
 };
 </script>
@@ -244,6 +271,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 html {
   background-color: rgb(238, 238, 238);
@@ -254,10 +282,5 @@ html {
 .operation-wrapper > span {
   display: block;
   text-align: left;
-}
-.task-button {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
 }
 </style>

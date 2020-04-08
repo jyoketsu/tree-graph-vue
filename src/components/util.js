@@ -260,6 +260,12 @@ function checkNode(c_nodes, nodeId) {
   return c_nodes;
 }
 
+function editNode(c_nodes, nodeId, prop) {
+  let node = findNodeById(c_nodes, nodeId);
+  node = { ...node, ...prop };
+  return c_nodes;
+}
+
 function save(c_nodes) {
   let nodes = JSON.parse(JSON.stringify(c_nodes));
   for (let index = 0; index < nodes.length; index++) {
@@ -283,5 +289,6 @@ export {
   deleteNode,
   dot,
   checkNode,
+  editNode,
   save
 };

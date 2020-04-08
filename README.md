@@ -9,7 +9,8 @@
 ```
 
 # tree-graph-vue
-vue樹狀思維導圖組件 Dendrogram Component
+
+vue 樹狀思維導圖組件 Dendrogram Component
 
 ## [在線 DEMO OnlineDemo](https://jyoketsu.github.io/tree-graph-vue/)
 
@@ -61,26 +62,26 @@ Vue.use(TreeGraph);
 
 ## 組件屬性
 
-| 屬性                 | 說明                                            | 類型     | 是否必須 | 默認值 |
-| -------------------- | ----------------------------------------------- | -------- | -------- | ------ |
-| nodes                | 節點                                            | Array    | 是       | -      |
-| startId              | 根節點 id                                       | String   | 是       | -      |
-| singleColumn         | 是否是單列視圖                                  | Boolean  | 否       | false  |
-| fileMode             | 是否為文件模式 文件模式：將整顆樹作為整體來操作 | Boolean  | 否       | true   |
-| ITEM_HEIGHT          | 節點元素高度                                    | Number   | 否       | 50     |
-| BLOCK_HEIGHT         | 節點塊高度                                      | Number   | 否       | 30     |
-| FONT_SIZE            | 節點字體大小                                    | Number   | 否       | 14     |
-| INDENT               | 縮進                                            | Number   | 否       | 25     |
-| AVATAR_WIDTH         | 頭像寬度                                        | Number   | 否       | 22     |
-| CHECK_BOX_WIDTH      | 勾選框寬度                                      | Number   | 否       | 18     |
-| handleClickNode      | 點擊節點事件                                    | Function | 否       | -      |
-| handleClickDot       | 點擊收起/展開事件                               | Function | 否       | -      |
-| handleCheck          | 點擊勾選框事件                                  | Function | 否       | -      |
-| handleChangeNodeText | 更改節點名事件                                  | Function | 否       | -      |
-| handleAddNext        | 向後添加兄弟節點事件                            | Function | 否       | -      |
-| handleAddChild       | 添加子節點事件                                  | Function | 否       | -      |
-| handleDeleteNode     | 刪除節點事件                                    | Function | 否       | -      |
-| handleSave           | 保存樹                                          | Function | 否       | -      |
+| 屬性                 | 說明                 | 類型     | 是否必須 | 默認值 |
+| -------------------- | -------------------- | -------- | -------- | ------ |
+| nodes                | 節點                 | Array    | 是       | -      |
+| startId              | 根節點 id            | String   | 是       | -      |
+| singleColumn         | 是否是單列視圖       | Boolean  | 否       | false  |
+| uncontrolled         | 是否為非受控組件     | Boolean  | 否       | true   |
+| ITEM_HEIGHT          | 節點元素高度         | Number   | 否       | 50     |
+| BLOCK_HEIGHT         | 節點塊高度           | Number   | 否       | 30     |
+| FONT_SIZE            | 節點字體大小         | Number   | 否       | 14     |
+| INDENT               | 縮進                 | Number   | 否       | 25     |
+| AVATAR_WIDTH         | 頭像寬度             | Number   | 否       | 22     |
+| CHECK_BOX_WIDTH      | 勾選框寬度           | Number   | 否       | 18     |
+| handleClickNode      | 點擊節點事件         | Function | 否       | -      |
+| handleClickDot       | 點擊收起/展開事件    | Function | 否       | -      |
+| handleCheck          | 點擊勾選框事件       | Function | 否       | -      |
+| handleChangeNodeText | 更改節點名事件       | Function | 否       | -      |
+| handleAddNext        | 向後添加兄弟節點事件 | Function | 否       | -      |
+| handleAddChild       | 添加子節點事件       | Function | 否       | -      |
+| handleDeleteNode     | 刪除節點事件         | Function | 否       | -      |
+| handleSave           | 保存樹               | Function | 否       | -      |
 
 ## 節點屬性
 
@@ -92,6 +93,7 @@ Vue.use(TreeGraph);
 | children     | 子節點 id            | Array   |
 | contract     | 是否收起子節點       | Boolean |
 | showAvatar   | 是否顯示頭像         | Boolean |
+| avatarUri    | 頭像地址             | String  |
 | showCheckbox | 是否顯示勾選框       | Boolean |
 | checked      | 是否勾選             | Boolean |
 | showStatus   | 是否顯示節點狀態     | Boolean |

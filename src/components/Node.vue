@@ -28,7 +28,7 @@
       :y="location(node, 'avatar').y"
       width="22"
       height="22"
-      xlink:href="https://psnine.com/Upload/game/11003.png"
+      :xlink:href="node.avatarUri"
       :clip-path="`url(#${alias}-avatar-clip-${node.id})`"
     />
     <!-- 勾选框 -->
