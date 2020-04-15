@@ -21,14 +21,14 @@
     <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
     <h3>單列視圖 Single Column</h3>
-    <tree
-      :nodes="nodes"
-      :startId="nodes[0].id"
-      :singleColumn="true"
-      ref="treeRef"
-    />
+    <tree :nodes="nodes" :startId="nodes[0].id" :singleColumn="true" />
     <h3>Only Root</h3>
-    <tree :nodes="one" :startId="one[0].id" />
+    <button @click="changeNode" :style="{ margin: '15px' }">
+      設為任務 Set as Task
+    </button>
+    <tree :nodes="one" :startId="one[0].id" ref="treeRef" />
+    <h3>脑图</h3>
+    <mind />
   </div>
 </template>
 
@@ -238,8 +238,8 @@ export default {
     };
   },
   methods: {
-    changeNode: function(node) {
-      this.$refs.treeRef.$emit("editNode", {
+    changeNode: function() {
+      this.$refs.treeRef.editNode({
         showAvatar: true,
         avatarUri:
           "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",

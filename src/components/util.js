@@ -261,8 +261,10 @@ function checkNode(c_nodes, nodeId) {
 }
 
 function editNode(c_nodes, nodeId, prop) {
-  let node = findNodeById(c_nodes, nodeId);
-  node = { ...node, ...prop };
+  const index = _.findIndex(c_nodes, function(o) {
+    return o.id === nodeId;
+  });
+  c_nodes[index] = { ...c_nodes[index], ...prop };
   return c_nodes;
 }
 

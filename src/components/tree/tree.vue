@@ -1,5 +1,6 @@
 <template>
   <Drag>
+    <div>{{test}}</div>
     <div
       class="svg-wrapper"
       tabindex="-1"
@@ -184,6 +185,7 @@ import Node from "../Node";
 import Dot from "../Dot";
 import Input from "../NodeInput";
 import calculate from "./treeService";
+import treeMixin from "../TreeMixin";
 import {
   changeNodeText,
   addNext,
@@ -197,6 +199,7 @@ import {
 } from "../util";
 export default {
   name: "tree",
+  mixins:[treeMixin],
   components: { Drag, Node, Dot, Input },
   props: {
     // 节点
@@ -381,6 +384,15 @@ export default {
         this.$refs.svgEl.focus();
       }
     },
+    editNode: function(entity) {
+      if (this.uncontrolled) {
+        if (!this.selected.id) {
+          return alert("请先选中节点！");
+        }
+        let nodes = editNode(this.c_nodes, this.selected.id, entity);
+        this.calculateNodes(nodes, this.startId, this.singleColumn);
+      }
+    },
     addNext: function() {
       if (!this.selected.id) {
         return alert("请先选中节点！");
@@ -395,6 +407,8 @@ export default {
         let selected = findNodeById(this.c_nodes, res.addedNode.id);
         this.selected = selected;
         this.showNewInput = true;
+      } else {
+        this.handleAddNext(this.selected);
       }
     },
     addChild: function(e) {
@@ -409,6 +423,8 @@ export default {
         let selected = findNodeById(this.c_nodes, res.addedNode.id);
         this.selected = selected;
         this.showNewInput = true;
+      } else {
+        this.handleAddChild(this.selected);
       }
     },
     deleteNode: function() {
@@ -423,6 +439,8 @@ export default {
         let nodes = deleteNode(this.c_nodes, this.selected.id, this.startId);
         this.calculateNodes(nodes, this.startId, this.singleColumn);
         this.selected = {};
+      } else {
+        this.handleDeleteNode(this.selected);
       }
     },
     saveNodes: function() {
@@ -476,4 +494,7 @@ export default {
 .svg-wrapper:focus {
   outline: none;
 }
+/* path{
+  transition: all 0.5s;
+} */
 </style>

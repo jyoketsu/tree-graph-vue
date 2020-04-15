@@ -171,4 +171,10 @@ export default {
 .node-text.selected {
   fill: #000000;
 }
+/* rect,
+circle,
+image,
+.node-text {
+  transition: all 0.5s;
+} */
 </style>
