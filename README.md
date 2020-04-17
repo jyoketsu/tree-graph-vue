@@ -75,7 +75,7 @@ Vue.use(TreeGraph);
 | AVATAR_WIDTH         | 頭像寬度             | Number   | 否       | 22     |
 | CHECK_BOX_WIDTH      | 勾選框寬度           | Number   | 否       | 18     |
 | handleClickNode      | 點擊節點事件         | Function | 否       | -      |
-| handleClickDot       | 點擊收起/展開事件    | Function | 否       | -      |
+| handleClickExpand       | 點擊收起/展開事件    | Function | 否       | -      |
 | handleCheck          | 點擊勾選框事件       | Function | 否       | -      |
 | handleChangeNodeText | 更改節點名事件       | Function | 否       | -      |
 | handleAddNext        | 向後添加兄弟節點事件 | Function | 否       | -      |

@@ -33,12 +33,12 @@ export default function calculate(
         const element = secondLevel[index];
         if (index === 0) {
           SECOND_START_NODE_ID = element.id;
-          location(nodes, element, 10, ITEM_HEIGHT * 1.5, isSingle);
+          location(nodes, element, 10, ITEM_HEIGHT * 1.5);
         } else {
           if (index + 1 === secondLevel.length) {
             SECOND_END_NODE_ID = element.id;
           }
-          location(nodes, element, MAX_END + 55, ITEM_HEIGHT * 1.5, isSingle);
+          location(nodes, element, MAX_END + 55, ITEM_HEIGHT * 1.5);
         }
       }
     }
@@ -52,7 +52,7 @@ export default function calculate(
     root.y = 1;
   } else {
     // 单列视图
-    location(nodes, root, 10, 10, isSingle);
+    location(nodes, root, 10, 10);
   }
 
   return {
@@ -73,7 +73,7 @@ export default function calculate(
     return secondLevel;
   }
 
-  function location(nodes, node, x, y, isSingle) {
+  function location(nodes, node, x, y) {
     const nodeWidth = getNodeWidth(node, FONT_SIZE);
     node.x = x;
     node.y = y;
@@ -110,25 +110,15 @@ export default function calculate(
           MAX_Y = childY;
         }
         const element = findNodeById(nodes, childrenIds[index]);
-
-        if (!isSingle) {
-          // 最后一个子节点
-          if (index + 1 === childrenIds.length) {
-            location(nodes, element, childX, childY, isSingle);
-          } else {
-            childY = location(nodes, element, childX, childY, isSingle);
-          }
-        } else {
-          childY = location(nodes, element, childX, childY, isSingle);
-          // 最后一个子节点
-          if (index + 1 !== childrenIds.length) {
-            lastChildY = childY;
-          }
+        childY = location(nodes, element, childX, childY);
+        // 非最后一个子节点
+        if (index + 1 !== childrenIds.length) {
+          lastChildY = childY;
         }
       }
     }
 
-    node.last_child_y = isSingle ? lastChildY : childY;
+    node.last_child_y = lastChildY;
     return childY;
   }
 }

@@ -155,14 +155,13 @@ export default {
 }
 .node-rect.border-rect {
   fill: #fff;
-  stroke: rgb(215, 215, 215);
+  stroke: rgb(192,192,192);
 }
 .node-rect.selected {
   fill: rgb(238, 238, 238);
   stroke: #000000;
 }
 .node-text {
-  user-select: none;
   fill: #999;
 }
 .node-text:hover {
@@ -170,6 +169,9 @@ export default {
 }
 .node-text.selected {
   fill: #000000;
+}
+text {
+  user-select: none;
 }
 /* rect,
 circle,

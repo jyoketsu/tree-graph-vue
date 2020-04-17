@@ -1,6 +1,5 @@
 <template>
   <Drag>
-    <div>{{test}}</div>
     <div
       class="svg-wrapper"
       tabindex="-1"
@@ -105,13 +104,13 @@
               v-if="node.x && node.y"
               :d="fatherPath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
             <path
               v-if="node.x && node.y && node.children.length && !node.contract"
               :d="childPath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
           </g>
           <g class="single-column" v-else>
@@ -122,7 +121,7 @@
               "
               :d="fatherPath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
             <!-- 线条：纵线 -->
             <path
@@ -135,7 +134,7 @@
               "
               :d="childPath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
             <!-- 根节点底部线条 -->
             <path
@@ -144,7 +143,7 @@
               "
               :d="rootHpaht(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
             <path
               v-if="
@@ -152,7 +151,7 @@
               "
               :d="rootVpath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
             <path
               v-if="
@@ -160,13 +159,19 @@
               "
               :d="rootBottomVpath(node)"
               fill="none"
-              stroke="rgb(215, 215, 215)"
+              stroke="rgb(192,192,192)"
             />
           </g>
           <Dot
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
-            :handleClickDot="handleDot"
+            :handleClickExpand="handleExpand"
+          />
+          <Expand
+            position="leftBottom"
+            :node="node"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
+            :handleClickExpand="handleExpand"
           />
         </g>
       </svg>
@@ -183,142 +188,46 @@
 import Drag from "../Drag";
 import Node from "../Node";
 import Dot from "../Dot";
+import Expand from "../Expand";
 import Input from "../NodeInput";
 import calculate from "./treeService";
 import treeMixin from "../TreeMixin";
-import {
-  changeNodeText,
-  addNext,
-  addChildNode,
-  deleteNode,
-  findNodeById,
-  dot,
-  save,
-  checkNode,
-  editNode
-} from "../util";
 export default {
   name: "tree",
-  mixins:[treeMixin],
-  components: { Drag, Node, Dot, Input },
+  mixins: [treeMixin],
+  components: { Drag, Node, Dot, Expand, Input },
   props: {
-    // 节点
-    nodes: {
-      // 文本
-      type: Array,
-      required: true,
-      default() {
-        return [];
-      }
-    },
-    // 根节点id
-    startId: {
-      type: String,
-      required: true
-    },
     // 单列视图
     singleColumn: {
       type: Boolean,
       default: false
-    },
-    // 非受控模式
-    uncontrolled: {
-      type: Boolean,
-      default: true
-    },
-    // 节点元素高度
-    ITEM_HEIGHT: {
-      type: Number,
-      default: 50
-    },
-    // 节点块高度
-    BLOCK_HEIGHT: {
-      type: Number,
-      default: 30
-    },
-    // 节点字体大小
-    FONT_SIZE: {
-      type: Number,
-      default: 14
-    },
-    // 缩进
-    INDENT: {
-      type: Number,
-      default: 25
-    },
-    // 头像宽度
-    AVATAR_WIDTH: {
-      type: Number,
-      default: 22
-    },
-    CHECK_BOX_WIDTH: {
-      type: Number,
-      default: 18
-    },
-    handleClickNode: {
-      type: Function,
-      default: function(node) {
-        console.log("---handleClickNode---", node);
-      }
-    },
-    handleClickDot: {
-      type: Function,
-      default: function(node) {
-        console.log("---handleClickDot---", node);
-      }
-    },
-    handleCheck: {
-      type: Function,
-      default: function(node) {
-        console.log("---handleCheck---", node);
-      }
-    },
-    handleChangeNodeText: {
-      type: Function,
-      default: function(nodeId, text) {
-        console.log("---handleChangeNodeText---", nodeId, text);
-      }
-    },
-    handleAddNext: {
-      type: Function,
-      default: function(selected, added) {
-        console.log("---handleAddNext---", selected, added);
-      }
-    },
-    handleAddChild: {
-      type: Function,
-      default: function(selected, added) {
-        console.log("---handleAddChild---", selected, added);
-      }
-    },
-    handleDeleteNode: {
-      type: Function,
-      default: function(selected) {
-        console.log("---handleDeleteNode---", selected);
-      }
-    },
-    handleSave: {
-      type: Function,
-      default: function(nodes) {
-        alert(nodes ? JSON.stringify(nodes) : "保存");
-      }
     }
   },
   data() {
     return {
-      c_nodes: [],
-      max_x: 0,
-      max_y: 0,
-      max_end: 0,
       second_start_x: 0,
       second_end_x: 0,
-      selected: {},
-      showInput: false,
-      showNewInput: false,
       isSingle: this.singleColumn
     };
   },
   methods: {
+    calculateNodes: function(nodes, startId, singleColumn) {
+      const cal = calculate(
+        nodes,
+        startId,
+        singleColumn,
+        this.ITEM_HEIGHT,
+        this.INDENT,
+        this.FONT_SIZE
+      );
+      this.c_nodes = cal.nodes;
+      this.max_x = cal.max_x;
+      this.max_y = cal.max_y;
+      this.max_end = cal.max_end;
+      this.second_start_x = cal.second_start_x;
+      this.second_end_x = cal.second_end_x;
+      this.isSingle = cal.isSingle;
+    },
     // 有父节点时的左侧水平线条
     fatherPath: function(node) {
       const M = `M ${node.x} ${node.y + this.BLOCK_HEIGHT / 2}`;
@@ -351,142 +260,7 @@ export default {
       const V = `V ${node.y -
         (this.ITEM_HEIGHT * 1.5 - this.BLOCK_HEIGHT) / 2}`;
       return `${M} ${V}`;
-    },
-    clickNode: function(node) {
-      if (this.selected.id === node.id) {
-        this.showInput = true;
-      } else {
-        this.$refs.svgEl.focus();
-      }
-      this.selected = node;
-      this.handleClickNode(node);
-    },
-    clickCheck: function(node) {
-      if (this.uncontrolled) {
-        this.c_nodes = checkNode(this.c_nodes, node.id);
-      }
-      this.handleCheck(node);
-    },
-    handleDot: function(node) {
-      if (this.uncontrolled) {
-        let nodes = dot(this.c_nodes, node.id);
-        this.calculateNodes(nodes, this.startId, this.singleColumn);
-      }
-      this.handleClickDot(node);
-    },
-    handleChangeText: function(nodeId, text) {
-      this.showInput = false;
-      this.showNewInput = false;
-      this.handleChangeNodeText(nodeId, text);
-      if (this.uncontrolled) {
-        let nodes = changeNodeText(this.c_nodes, nodeId, text);
-        this.calculateNodes(nodes, this.startId, this.singleColumn);
-        this.$refs.svgEl.focus();
-      }
-    },
-    editNode: function(entity) {
-      if (this.uncontrolled) {
-        if (!this.selected.id) {
-          return alert("请先选中节点！");
-        }
-        let nodes = editNode(this.c_nodes, this.selected.id, entity);
-        this.calculateNodes(nodes, this.startId, this.singleColumn);
-      }
-    },
-    addNext: function() {
-      if (!this.selected.id) {
-        return alert("请先选中节点！");
-      }
-      if (this.selected.id === this.startId) {
-        return alert("根节点无法添加兄弟节点！");
-      }
-      if (this.uncontrolled) {
-        let res = addNext(this.c_nodes, this.selected.id);
-        this.calculateNodes(res.nodes, this.startId, this.singleColumn);
-        this.handleAddNext(this.selected, res.addedNode);
-        let selected = findNodeById(this.c_nodes, res.addedNode.id);
-        this.selected = selected;
-        this.showNewInput = true;
-      } else {
-        this.handleAddNext(this.selected);
-      }
-    },
-    addChild: function(e) {
-      e.preventDefault();
-      if (!this.selected.id) {
-        return alert("请先选中节点！");
-      }
-      if (this.uncontrolled) {
-        let res = addChildNode(this.c_nodes, this.selected.id);
-        this.calculateNodes(res.nodes, this.startId, this.singleColumn);
-        this.handleAddChild(this.selected, res.addedNode);
-        let selected = findNodeById(this.c_nodes, res.addedNode.id);
-        this.selected = selected;
-        this.showNewInput = true;
-      } else {
-        this.handleAddChild(this.selected);
-      }
-    },
-    deleteNode: function() {
-      if (!this.selected.id) {
-        return alert("请先选中节点！");
-      }
-      if (this.selected.id === this.startId) {
-        return alert("根节点不允许删除！");
-      }
-      if (this.uncontrolled) {
-        this.handleDeleteNode(this.selected);
-        let nodes = deleteNode(this.c_nodes, this.selected.id, this.startId);
-        this.calculateNodes(nodes, this.startId, this.singleColumn);
-        this.selected = {};
-      } else {
-        this.handleDeleteNode(this.selected);
-      }
-    },
-    saveNodes: function() {
-      if (this.uncontrolled) {
-        const nodes = save(this.c_nodes);
-        this.handleSave(nodes);
-      } else {
-        this.handleSave();
-      }
-    },
-    calculateNodes: function(nodes, startId, singleColumn) {
-      const cal = calculate(
-        nodes,
-        startId,
-        singleColumn,
-        this.ITEM_HEIGHT,
-        this.INDENT,
-        this.FONT_SIZE
-      );
-      this.c_nodes = cal.nodes;
-      this.max_x = cal.max_x;
-      this.max_y = cal.max_y;
-      this.max_end = cal.max_end;
-      this.second_start_x = cal.second_start_x;
-      this.second_end_x = cal.second_end_x;
-      this.isSingle = cal.isSingle;
     }
-  },
-  watch: {
-    nodes: {
-      immediate: true,
-      deep: true,
-      handler: function() {
-        if (!this.uncontrolled) {
-          this.calculateNodes(this.nodes, this.startId, this.singleColumn);
-        }
-      }
-    },
-    selected: function(val, oldVal) {
-      if (val && oldVal && val.id !== oldVal.id) {
-        this.showInput = false;
-      }
-    }
-  },
-  mounted() {
-    this.calculateNodes(this.nodes, this.startId, this.singleColumn);
   }
 };
 </script>

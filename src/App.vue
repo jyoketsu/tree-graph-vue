@@ -18,6 +18,8 @@
       >
       <span>Save Data：Command + S / Ctrl + S</span>
     </div>
+    <h3>脑图</h3>
+    <mind :nodes="nodes" :startId="nodes[0].id" />
     <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
     <h3>單列視圖 Single Column</h3>
@@ -27,8 +29,6 @@
       設為任務 Set as Task
     </button>
     <tree :nodes="one" :startId="one[0].id" ref="treeRef" />
-    <h3>脑图</h3>
-    <mind />
   </div>
 </template>
 
@@ -48,7 +48,12 @@ export default {
           children: ["002", "003", "004", "005"],
           contract: false,
           showAvatar: true,
-          avatarUri: "https://psnine.com/Upload/game/11003.png"
+          avatarUri: "https://psnine.com/Upload/game/11003.png",
+          showCheckbox: true,
+          checked: true,
+          showStatus: true,
+          hour: 0.1,
+          limitDay: -23
         },
         {
           id: "002",
@@ -149,7 +154,7 @@ export default {
           id: "009",
           text: "還原數據",
           fatherId: "006",
-          children: [],
+          children: ["015"],
           showAvatar: true,
           avatarUri: "https://psnine.com/Upload/game/11003.png",
           showCheckbox: true,
@@ -215,6 +220,20 @@ export default {
           id: "014",
           text: "測試",
           fatherId: "011",
+          children: [],
+          showAvatar: true,
+          avatarUri:
+            "http://tva2.sinaimg.cn/thumb150/bfae17b6ly1fgkhutulafj20sg0sge81",
+          showCheckbox: true,
+          checked: true,
+          showStatus: true,
+          hour: 0.1,
+          limitDay: 2
+        },
+        {
+          id: "015",
+          text: "還原數據-還原數據",
+          fatherId: "009",
           children: [],
           showAvatar: true,
           avatarUri:
