@@ -4,7 +4,7 @@
     <circle
       v-if="node.x && node.y"
       id="dot"
-      :cx="node.x - 4"
+      :cx="x"
       :cy="node.y + BLOCK_HEIGHT / 2"
       r="4"
       fill="#666"
@@ -25,6 +25,23 @@ export default {
     BLOCK_HEIGHT: {
       type: Number,
       required: true
+    },
+    // 位置
+    position: {
+      type: String,
+      default: "left"
+    }
+  },
+  computed: {
+    x: function() {
+      switch (this.position) {
+        case "left":
+          return this.node.x - 4;
+        case "right":
+          return this.node.x + this.node.width + 4;
+        default:
+          return this.node.x - 4;
+      }
     }
   }
 };

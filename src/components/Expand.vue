@@ -50,8 +50,12 @@ export default {
       switch (this.position) {
         case "right":
           return this.node.x + this.node.width;
+        case "left":
+          return this.node.x - 8;
         case "leftBottom":
           return this.node.x;
+        case "bottomCenter":
+          return this.node.x + this.node.width / 2 - 4;
         default:
           return this.node.x;
       }
@@ -59,8 +63,10 @@ export default {
     y: function() {
       switch (this.position) {
         case "right":
+        case "left":
           return this.node.y + this.BLOCK_HEIGHT / 2 - 5;
         case "leftBottom":
+        case "bottomCenter":
           return this.node.y + this.BLOCK_HEIGHT;
         default:
           return this.node.y + this.BLOCK_HEIGHT / 2 - 5;

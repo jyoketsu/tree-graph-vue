@@ -275,8 +275,29 @@ function save(c_nodes) {
     delete element.width;
     delete element.x;
     delete element.y;
+    delete element.toLeft;
+    delete element.dots;
+    delete element.leftDots;
+    delete element.rightDots;
   }
   return nodes;
+}
+
+function dragSort(c_nodes, x, y) {
+  let minDiff;
+  let node;
+  for (let index = 0; index < c_nodes.length; index++) {
+    const element = c_nodes[index];
+    const diff = Math.abs(x - element.x) + Math.abs(y - element.y);
+    if (minDiff === undefined) {
+      minDiff = diff;
+      node = element;
+    } else if (diff < minDiff) {
+      minDiff = diff;
+      node = element;
+    }
+  }
+  console.log("---node---", node);
 }
 
 export {
@@ -292,5 +313,6 @@ export {
   dot,
   checkNode,
   editNode,
-  save
+  save,
+  dragSort
 };

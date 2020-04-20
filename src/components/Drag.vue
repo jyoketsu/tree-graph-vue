@@ -4,10 +4,10 @@
     :style="{ transform: `translate(${translateX}px,${translateY}px)` }"
     @touchstart="handleMoveStart"
     @touchend="handleMoveEnd"
-    @mousedown="handleMoveStart"
-    @mousemove="handleMove"
+    @contextmenu.prevent="handleMoveStart"
     @mouseup="handleMoveEnd"
     @mouseleave="handleMoveEnd"
+    @mousemove="handleMove"
   >
     <slot></slot>
   </div>

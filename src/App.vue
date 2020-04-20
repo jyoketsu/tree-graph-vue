@@ -6,19 +6,19 @@
       <span>添加子節點：Tab</span>
       <span>向後添加兄弟節點：Enter</span>
       <span>刪除節點：Delete</span>
-      <span>編輯節點名：選中節點後點擊節點，按下Enter完成</span>
+      <span>編輯節點名：雙擊進入編輯狀態，按下Enter完成</span>
       <span>保存數據：Command + S / Ctrl + S</span>
       <hr />
       <span>Add Child Node：Tab</span>
       <span>Add sibling nodes backward：Enter</span>
       <span>Delete Nodes：Delete</span>
       <span>
-        Edit Node：After selecting the node, click the node and press Enter to
-        complete</span
+        Edit Node：Double-click to enter edit state and press Enter to finish</span
       >
       <span>Save Data：Command + S / Ctrl + S</span>
     </div>
-    <h3>脑图</h3>
+    <h3>脑图 Mind</h3>
+    <mind :nodes="nodes" :startId="nodes[0].id" :singleColumn="true"/>
     <mind :nodes="nodes" :startId="nodes[0].id" />
     <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
@@ -98,7 +98,7 @@ export default {
         },
         {
           id: "005",
-          text: "項目驗收",
+          text: "驗收",
           fatherId: "001",
           children: [],
           showAvatar: true,

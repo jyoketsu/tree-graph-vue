@@ -7,7 +7,8 @@ import {
   dot,
   save,
   checkNode,
-  editNode
+  editNode,
+  dragSort
 } from "./util";
 
 var treeMixin = {
@@ -60,10 +61,20 @@ var treeMixin = {
       type: Number,
       default: 18
     },
+    PATH_WIDTH: {
+      type: Number,
+      default: 1.5
+    },
     handleClickNode: {
       type: Function,
       default: function(node) {
         console.log("---handleClickNode---", node);
+      }
+    },
+    handleDbClickNode: {
+      type: Function,
+      default: function(node) {
+        console.log("---handleDbClickNode---", node);
       }
     },
     handleClickExpand: {
@@ -117,18 +128,31 @@ var treeMixin = {
       max_end: 0,
       selected: {},
       showInput: false,
-      showNewInput: false
+      showNewInput: false,
+      showDragNode: false,
+      movedNodeX: 0,
+      movedNodeY: 0
     };
   },
   methods: {
     clickNode: function(node) {
-      if (this.selected.id === node.id) {
-        this.showInput = true;
-      } else {
-        this.$refs.svgEl.focus();
-      }
+      // if (this.selected.id === node.id) {
+      //   this.showInput = true;
+      // } else {
+      //   this.$refs.svgEl.focus();
+      // }
+      clearTimeout(this.clickTimeId);
+      let that = this;
+      this.clickTimeId = setTimeout(function() {
+        that.selected = node;
+        that.handleClickNode(node);
+      }, 250);
+    },
+    dbClickNode: function(node) {
+      clearTimeout(this.clickTimeId);
       this.selected = node;
-      this.handleClickNode(node);
+      this.showInput = true;
+      this.handleDbClickNode(node);
     },
     clickCheck: function(node) {
       if (this.uncontrolled) {
@@ -220,6 +244,37 @@ var treeMixin = {
         this.handleSave();
       }
     },
+    handleDragStart: function(e) {
+      if (e.target.classList.contains("selected")) {
+        this.showDragNode = true;
+        this.clickX = e.clientX;
+        this.clickY = e.clientY;
+      }
+    },
+    handleMoveNode: function(e) {
+      if (this.showDragNode) {
+        let movedX = 0;
+        let movedY = 0;
+        movedX = e.clientX - this.clickX;
+        movedY = e.clientY - this.clickY;
+
+        this.movedNodeX = this.movedNodeX + movedX;
+        this.movedNodeY = this.movedNodeY + movedY;
+
+        this.clickX = e.clientX;
+        this.clickY = e.clientY;
+      }
+    },
+    handleDragEnd: function() {
+      if (this.showDragNode) {
+        this.showDragNode = false;
+        const x = this.selected.x + this.movedNodeX;
+        const y = this.selected.y + this.movedNodeY;
+        this.movedNodeX = 0;
+        this.movedNodeY = 0;
+        dragSort(this.c_nodes, x, y);
+      }
+    }
   },
   watch: {
     nodes: {
@@ -229,11 +284,6 @@ var treeMixin = {
         if (!this.uncontrolled) {
           this.calculateNodes(this.nodes, this.startId, this.singleColumn);
         }
-      }
-    },
-    selected: function(val, oldVal) {
-      if (val && oldVal && val.id !== oldVal.id) {
-        this.showInput = false;
       }
     }
   },

@@ -1,5 +1,5 @@
 <template>
-  <g @click="handleClickNode(node)">
+  <g @click="handleClickNode(node)" @dblclick="handleDbClickNode(node)">
     <!-- 节点 -->
     <rect
       v-if="node.x && node.y"
@@ -123,6 +123,10 @@ export default {
       type: Function,
       required: true
     },
+    handleDbClickNode: {
+      type: Function,
+      required: true
+    },
     handleCheck: {
       type: Function,
       required: true
@@ -155,7 +159,7 @@ export default {
 }
 .node-rect.border-rect {
   fill: #fff;
-  stroke: rgb(192,192,192);
+  stroke: rgb(192, 192, 192);
 }
 .node-rect.selected {
   fill: rgb(238, 238, 238);

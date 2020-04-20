@@ -8,12 +8,16 @@
       @keydown.delete="deleteNode"
       v-on:keydown.ctrl.83.prevent="saveNodes"
       v-on:keydown.meta.83.prevent="saveNodes"
+      @mousedown="handleDragStart"
+      @mousemove="handleMoveNode"
+      @mouseup="handleDragEnd"
+      @mouseleave="handleDragEnd"
       ref="svgEl"
     >
       <svg
         class="tree-svg"
-        :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
-        :width="max_end"
+        :viewBox="`0 0 ${max_end + 15} ${max_y + ITEM_HEIGHT}`"
+        :width="max_end + 15"
         :height="max_y + ITEM_HEIGHT"
       >
         <defs>
@@ -97,6 +101,7 @@
             :alias="new Date().getTime()"
             :selected="selected"
             :handleClickNode="clickNode"
+            :handleDbClickNode="dbClickNode"
             :handleCheck="clickCheck"
           />
           <g class="multi-column" v-if="isSingle">
@@ -105,12 +110,14 @@
               :d="fatherPath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
             <path
               v-if="node.x && node.y && node.children.length && !node.contract"
               :d="childPath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
           </g>
           <g class="single-column" v-else>
@@ -122,6 +129,7 @@
               :d="fatherPath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
             <!-- 线条：纵线 -->
             <path
@@ -135,6 +143,7 @@
               :d="childPath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
             <!-- 根节点底部线条 -->
             <path
@@ -144,6 +153,7 @@
               :d="rootHpaht(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
             <path
               v-if="
@@ -152,6 +162,7 @@
               :d="rootVpath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
             <path
               v-if="
@@ -160,6 +171,7 @@
               :d="rootBottomVpath(node)"
               fill="none"
               stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
             />
           </g>
           <Dot
@@ -168,10 +180,21 @@
             :handleClickExpand="handleExpand"
           />
           <Expand
-            position="leftBottom"
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
             :handleClickExpand="handleExpand"
+            :position="
+              node.id === startId && !singleColumn
+                ? 'bottomCenter'
+                : 'leftBottom'
+            "
+          />
+          <DragNode
+            v-if="showDragNode"
+            :node="selected"
+            :x="movedNodeX"
+            :y="movedNodeY"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
           />
         </g>
       </svg>
@@ -192,10 +215,11 @@ import Expand from "../Expand";
 import Input from "../NodeInput";
 import calculate from "./treeService";
 import treeMixin from "../TreeMixin";
+import DragNode from "../DragNode";
 export default {
   name: "tree",
   mixins: [treeMixin],
-  components: { Drag, Node, Dot, Expand, Input },
+  components: { Drag, Node, Dot, Expand, Input, DragNode },
   props: {
     // 单列视图
     singleColumn: {

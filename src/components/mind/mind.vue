@@ -8,12 +8,16 @@
       @keydown.delete="deleteNode"
       v-on:keydown.ctrl.83.prevent="saveNodes"
       v-on:keydown.meta.83.prevent="saveNodes"
+      @mousedown="handleDragStart"
+      @mousemove="handleMoveNode"
+      @mouseup="handleDragEnd"
+      @mouseleave="handleDragEnd"
       ref="svgEl"
     >
       <svg
         class="tree-svg"
-        :viewBox="`0 0 ${max_end} ${max_y + ITEM_HEIGHT}`"
-        :width="max_end"
+        :viewBox="`0 0 ${max_end + 15} ${max_y + ITEM_HEIGHT}`"
+        :width="max_end + 15"
         :height="max_y + ITEM_HEIGHT"
       >
         <defs>
@@ -97,20 +101,54 @@
             :alias="new Date().getTime()"
             :selected="selected"
             :handleClickNode="clickNode"
+            :handleDbClickNode="dbClickNode"
             :handleCheck="clickCheck"
           />
-          <path
-            v-for="(dotY, index) in node.dots"
-            :key="index"
-            :d="path(node, dotY)"
-            stroke="rgb(192,192,192)"
-            fill="transparent"
+          <g v-if="node.x && node.y">
+            <path
+              v-for="(dotY, index) in node.dots"
+              :key="index"
+              :d="path(node, dotY)"
+              stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
+              fill="transparent"
+            />
+          </g>
+          <g v-if="node.id === startId">
+            <path
+              v-for="(dotY, index) in node.leftDots"
+              :key="`leftDots-${index}`"
+              :d="rootPath(node, dotY, true)"
+              stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
+              fill="transparent"
+            />
+            <path
+              v-for="(dotY, index) in node.rightDots"
+              :key="`rightDots-${index}`"
+              :d="rootPath(node, dotY, false)"
+              stroke="rgb(192,192,192)"
+              :stroke-width="PATH_WIDTH"
+              fill="transparent"
+            />
+          </g>
+          <Dot
+            :node="node"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
+            :position="node.toLeft ? 'right' : 'left'"
           />
-          <Dot :node="node" :BLOCK_HEIGHT="BLOCK_HEIGHT" />
           <Expand
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
             :handleClickExpand="handleExpand"
+            :position="node.toLeft ? 'left' : 'right'"
+          />
+          <DragNode
+            v-if="showDragNode"
+            :node="selected"
+            :x="movedNodeX"
+            :y="movedNodeY"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
           />
         </g>
       </svg>
@@ -130,20 +168,28 @@ import Node from "../Node";
 import Dot from "../Dot";
 import Expand from "../Expand";
 import Input from "../NodeInput";
+import DragNode from "../DragNode";
 export default {
   name: "mind",
   mixins: [treeMixin],
-  components: { Drag, Node, Dot, Expand, Input },
+  components: { Drag, Node, Dot, Expand, Input, DragNode },
+  props: {
+    // 单向视图
+    singleColumn: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     calculateNodes: function(nodes, startId, singleColumn) {
       const cal = calculate(
         nodes,
         startId,
+        this.singleColumn,
         this.ITEM_HEIGHT,
         this.INDENT,
         this.FONT_SIZE
       );
-      console.log("cal------", cal);
 
       this.c_nodes = cal.nodes;
       this.max_x = cal.max_x;
@@ -151,10 +197,30 @@ export default {
       this.max_end = cal.max_end;
     },
     path: function(node, dotY) {
-      const startX = node.x + node.width;
+      const startX = !node.toLeft ? node.x + node.width : node.x;
       const startY = node.y + this.BLOCK_HEIGHT / 2;
 
-      const endX = node.x + node.width + this.INDENT * 2 - 8;
+      const endX = !node.toLeft
+        ? node.x + node.width + this.INDENT * 2 - 8
+        : node.x - this.INDENT * 2;
+      const endY = dotY + this.BLOCK_HEIGHT / 2;
+
+      const x1 = (startX + endX) / 2;
+      const y1 = startY;
+      const x2 = x1;
+      const y2 = endY;
+
+      const M = `M ${startX} ${startY}`;
+      const C = `C ${x1} ${y1},${x2} ${y2}, ${endX} ${endY}`;
+      return `${M} ${C}`;
+    },
+    rootPath: function(node, dotY, isLeft) {
+      const startX = !isLeft ? node.x + node.width : node.x;
+      const startY = node.y + this.BLOCK_HEIGHT / 2;
+
+      const endX = !isLeft
+        ? node.x + node.width + this.INDENT * 2
+        : node.x - this.INDENT * 2 - 8;
       const endY = dotY + this.BLOCK_HEIGHT / 2;
 
       const x1 = (startX + endX) / 2;
