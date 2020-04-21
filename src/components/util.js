@@ -43,7 +43,8 @@ function guid(len, radix) {
 function textWidth(fontSize) {
   const ele = document.createElement("span");
   ele.innerText = "傑";
-  ele.fontSize = `${fontSize}px`;
+  ele.style.fontSize = `${fontSize}px`;
+  ele.style.fontFamily = '"Microsoft YaHei", sans-serif';
   document.body.appendChild(ele);
   const kanjiWidth = ele.offsetWidth;
   ele.innerText = "；";
@@ -283,7 +284,7 @@ function save(c_nodes) {
   return nodes;
 }
 
-function dragSort(c_nodes, x, y) {
+function dragEnd(c_nodes, blockHeight, x, y) {
   let minDiff;
   let node;
   for (let index = 0; index < c_nodes.length; index++) {
@@ -297,7 +298,103 @@ function dragSort(c_nodes, x, y) {
       node = element;
     }
   }
-  console.log("---node---", node);
+  const diffX = x - node.x;
+  const diffY = y - node.y;
+  let position;
+  if (Math.abs(diffX) < node.width && Math.abs(diffY) < blockHeight) {
+    position = "inside";
+  } else if (diffX < 0 && diffY < 0) {
+    position = "top-left";
+  } else if (diffX < 0 && diffY > 0) {
+    position = "bottom-left";
+  } else if (diffX > 0 && diffY < 0) {
+    position = "top-right";
+  } else {
+    position = "bottom-right";
+  }
+  return {
+    targetNode: node,
+    targetPosition: position
+  };
+}
+
+function dragSort(nodes, selectedId, targetNodeId, position, arrange) {
+  let selectedNode = findNodeById(nodes, selectedId);
+  let targetNode = findNodeById(nodes, targetNodeId);
+  switch (position) {
+    case "inside":
+      // 从选中节点的父节点的children中删除当前id
+      let selectedNodeFather = findNodeById(nodes, selectedNode.fatherId);
+      let children = selectedNodeFather.children;
+      children.splice(children.indexOf(selectedNode.id), 1);
+      selectedNode.fatherId = targetNodeId;
+      // 将当前id添加到目标节点children中
+      targetNode.children.push(selectedNode.id);
+      break;
+    case "top-left":
+      if (arrange === "vertical") {
+        addSibling("before");
+      } else {
+        addSibling("before");
+      }
+      break;
+    case "top-right":
+      if (arrange === "vertical") {
+        addSibling("before");
+      } else {
+        addSibling("next");
+      }
+      break;
+    case "bottom-left":
+      if (arrange === "vertical") {
+        addSibling("next");
+      } else {
+        addSibling("before");
+      }
+      break;
+    case "bottom-right":
+      if (arrange === "vertical") {
+        addSibling("next");
+      } else {
+        addSibling("next");
+      }
+      break;
+    default:
+      break;
+  }
+  return nodes;
+  function addSibling(type) {
+    if (selectedNode.fatherId === targetNode.fatherId) {
+      // 从选中节点的父节点的children中删除当前id
+      let father = findNodeById(nodes, targetNode.fatherId);
+      let children = father.children;
+      children.splice(children.indexOf(selectedNode.id), 1);
+      // 将当前id添加到目标节点的父节点children中
+      children.splice(
+        type === "next"
+          ? children.indexOf(targetNodeId) + 1
+          : children.indexOf(targetNodeId),
+        0,
+        selectedId
+      );
+    } else {
+      // 从选中节点的父节点的children中删除当前id
+      let selectedNodeFather = findNodeById(nodes, selectedNode.fatherId);
+      let children = selectedNodeFather.children;
+      children.splice(children.indexOf(selectedNode.id), 1);
+      selectedNode.fatherId = targetNode.fatherId;
+      // 将当前id添加到目标节点的父节点children中
+      let targetFather = findNodeById(nodes, targetNode.fatherId);
+      let children2 = targetFather.children;
+      children2.splice(
+        type === "next"
+          ? children2.indexOf(targetNodeId) + 1
+          : children2.indexOf(targetNodeId),
+        0,
+        selectedId
+      );
+    }
+  }
 }
 
 export {
@@ -314,5 +411,6 @@ export {
   checkNode,
   editNode,
   save,
+  dragEnd,
   dragSort
 };

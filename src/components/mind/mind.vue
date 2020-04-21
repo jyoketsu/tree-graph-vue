@@ -93,17 +93,6 @@
           :key="index"
           :class="`node-group-${index}`"
         >
-          <Node
-            :node="node"
-            :BLOCK_HEIGHT="BLOCK_HEIGHT"
-            :FONT_SIZE="FONT_SIZE"
-            :startId="startId"
-            :alias="new Date().getTime()"
-            :selected="selected"
-            :handleClickNode="clickNode"
-            :handleDbClickNode="dbClickNode"
-            :handleCheck="clickCheck"
-          />
           <g v-if="node.x && node.y">
             <path
               v-for="(dotY, index) in node.dots"
@@ -132,6 +121,17 @@
               fill="transparent"
             />
           </g>
+          <Node
+            :node="node"
+            :BLOCK_HEIGHT="BLOCK_HEIGHT"
+            :FONT_SIZE="FONT_SIZE"
+            :startId="startId"
+            :alias="new Date().getTime()"
+            :selected="selected"
+            :handleClickNode="clickNode"
+            :handleDbClickNode="dbClickNode"
+            :handleCheck="clickCheck"
+          />
           <Dot
             :node="node"
             :BLOCK_HEIGHT="BLOCK_HEIGHT"
@@ -215,7 +215,8 @@ export default {
       return `${M} ${C}`;
     },
     rootPath: function(node, dotY, isLeft) {
-      const startX = !isLeft ? node.x + node.width : node.x;
+      // const startX = !isLeft ? node.x + node.width : node.x;
+      const startX = node.x + node.width / 2;
       const startY = node.y + this.BLOCK_HEIGHT / 2;
 
       const endX = !isLeft

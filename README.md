@@ -86,6 +86,7 @@ Vue.use(TreeGraph);
 | handleAddChild       | 添加子節點事件       | Function | 否       | -      |
 | handleDeleteNode     | 刪除節點事件         | Function | 否       | -      |
 | handleSave           | 保存樹               | Function | 否       | -      |
+| handleDrag           | 拖拽节点               | Function | 否       | -      |
 
 ## 節點屬性
 

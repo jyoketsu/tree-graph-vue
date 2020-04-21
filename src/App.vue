@@ -7,18 +7,21 @@
       <span>向後添加兄弟節點：Enter</span>
       <span>刪除節點：Delete</span>
       <span>編輯節點名：雙擊進入編輯狀態，按下Enter完成</span>
+      <span>排序：拖動節點到目標位置</span>
       <span>保存數據：Command + S / Ctrl + S</span>
       <hr />
       <span>Add Child Node：Tab</span>
       <span>Add sibling nodes backward：Enter</span>
       <span>Delete Nodes：Delete</span>
       <span>
-        Edit Node：Double-click to enter edit state and press Enter to finish</span
+        Edit Node：Double-click to enter edit state and press Enter to
+        finish</span
       >
+      <span>Sort: Drag the node to the target location</span>
       <span>Save Data：Command + S / Ctrl + S</span>
     </div>
     <h3>脑图 Mind</h3>
-    <mind :nodes="nodes" :startId="nodes[0].id" :singleColumn="true"/>
+    <mind :nodes="nodes" :startId="nodes[0].id" :singleColumn="true" />
     <mind :nodes="nodes" :startId="nodes[0].id" />
     <h3>多列視圖 Multi Column</h3>
     <tree :nodes="nodes" :startId="nodes[0].id" />
@@ -192,7 +195,7 @@ export default {
         },
         {
           id: "012",
-          text: "原型&界面設計",
+          text: "原型、界面設計",
           fatherId: "011",
           children: [],
           showAvatar: true,

@@ -8,6 +8,7 @@ import {
   save,
   checkNode,
   editNode,
+  dragEnd,
   dragSort
 } from "./util";
 
@@ -117,6 +118,15 @@ var treeMixin = {
       type: Function,
       default: function(nodes) {
         alert(nodes ? JSON.stringify(nodes) : "保存");
+      }
+    },
+    handleDrag: {
+      type: Function,
+      default: function(selectedId, targetId, targetPosition, arrange) {
+        console.log(
+          "---handleDrag---",
+          `selectedId:${selectedId}, targetId:${targetId}, targetPosition:${targetPosition}, arrange:${arrange}`
+        );
       }
     }
   },
@@ -249,6 +259,8 @@ var treeMixin = {
         this.showDragNode = true;
         this.clickX = e.clientX;
         this.clickY = e.clientY;
+        this.movedNodeX = 0;
+        this.movedNodeY = 0;
       }
     },
     handleMoveNode: function(e) {
@@ -268,11 +280,48 @@ var treeMixin = {
     handleDragEnd: function() {
       if (this.showDragNode) {
         this.showDragNode = false;
+        if (Math.abs(this.movedNodeX) < 5 || Math.abs(this.movedNodeY) < 5) {
+          return;
+        }
         const x = this.selected.x + this.movedNodeX;
         const y = this.selected.y + this.movedNodeY;
         this.movedNodeX = 0;
         this.movedNodeY = 0;
-        dragSort(this.c_nodes, x, y);
+        const res = dragEnd(this.c_nodes, this.BLOCK_HEIGHT, x, y);
+
+        const componentName = this.$options.name;
+        let arrange = "vertical";
+        if (componentName === "tree") {
+          if (this.singleColumn) {
+            arrange = "vertical";
+          } else {
+            if (res.targetNode.fatherId === this.startId) {
+              arrange = "horizontal";
+            } else {
+              arrange = "horizontal";
+            }
+          }
+        } else if (componentName === "mind") {
+          arrange = "vertical";
+        }
+        if (this.uncontrolled) {
+          let nodes = dragSort(
+            this.c_nodes,
+            this.selected.id,
+            res.targetNode.id,
+            res.targetPosition,
+            arrange
+          );
+          this.calculateNodes(nodes, this.startId, this.singleColumn);
+          let selected = findNodeById(this.c_nodes, this.selected.id);
+          this.selected = selected;
+        }
+        this.handleDrag(
+          this.selected.id,
+          res.targetNode.id,
+          res.targetPosition,
+          arrange
+        );
       }
     }
   },

@@ -152,7 +152,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 .node-rect {
   fill: none;
   stroke-width: 1;
@@ -167,6 +167,7 @@ export default {
 }
 .node-text {
   fill: #999;
+  font-family: "Microsoft YaHei", sans-serif;
 }
 .node-text:hover {
   cursor: pointer;
@@ -177,10 +178,4 @@ export default {
 text {
   user-select: none;
 }
-/* rect,
-circle,
-image,
-.node-text {
-  transition: all 0.5s;
-} */
 </style>
